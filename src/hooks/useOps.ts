@@ -125,6 +125,7 @@ export function useOps() {
     alertas,
     nAlertas: alertas.length,
     emAlerta,
+    emPrevencao,
     eventos,
     relogio,
     tratativa,
