@@ -112,33 +112,42 @@ function CentroOperacoes() {
           <ul className="mt-3 grid gap-px border border-line bg-line [grid-template-columns:repeat(auto-fit,minmax(120px,1fr))]">
             {POSTOS.map((p) => {
               const on = ops.emAlerta(p.id);
+              const prev = ops.emPrevencao(p.id);
               return (
                 <li
                   key={p.id}
                   className={cn(
                     "grid grid-cols-[auto_minmax(0,1fr)] items-center gap-2 px-3 py-2",
-                    on ? "bg-alert-bg" : "bg-panel-2",
+                    on ? "bg-alert-bg" : prev ? "bg-warn/12" : "bg-panel-2",
                   )}
                 >
                   <i
                     aria-hidden
-                    className={cn("size-2 rounded-full", on ? "bg-alert" : "bg-ok")}
-                    style={on ? { animation: "alert-breathe 1.2s ease-in-out infinite" } : undefined}
+                    className={cn(
+                      "size-2 rounded-full",
+                      on ? "bg-alert" : prev ? "bg-warn" : "bg-ok",
+                    )}
+                    style={
+                      on || prev
+                        ? { animation: "alert-breathe 1.2s ease-in-out infinite" }
+                        : undefined
+                    }
                   />
                   <div className="min-w-0">
                     <p className="label-mono truncate">{p.codigo}</p>
                     <p
                       className={cn(
                         "truncate font-display text-base2 font-bold tracking-[0.08em] uppercase",
-                        on ? "text-alert" : "text-ok",
+                        on ? "text-alert" : prev ? "text-warn" : "text-ok",
                       )}
                     >
-                      {on ? "Alerta" : "Normal"}
+                      {on ? "Crítico" : prev ? "Atenção" : "Normal"}
                     </p>
                   </div>
                 </li>
               );
             })}
+
           </ul>
 
           {/* Barra de estado + ações */}
@@ -186,6 +195,7 @@ function CentroOperacoes() {
                   <TacticalMap
                     postos={POSTOS}
                     emAlerta={ops.emAlerta}
+                    emPrevencao={ops.emPrevencao}
                     selecionado={selecionado}
                     onSelect={setSelecionado}
                     relogio={ops.relogio}
@@ -206,12 +216,14 @@ function CentroOperacoes() {
                         variante="ct"
                         postos={TODOS}
                         emAlerta={ops.emAlerta}
+                        emPrevencao={ops.emPrevencao}
                       />
                       <MonitorBoard
                         titulo="Guarda 1 — Quadro de monitoramento"
                         variante="guarda"
                         postos={GUARDA1_POSTOS}
                         emAlerta={ops.emAlerta}
+                        emPrevencao={ops.emPrevencao}
                       />
                     </div>
                   </div>
@@ -265,6 +277,7 @@ function CentroOperacoes() {
                 <TacticalMap
                   postos={POSTOS}
                   emAlerta={ops.emAlerta}
+                    emPrevencao={ops.emPrevencao}
                   selecionado={selecionado}
                   onSelect={setSelecionado}
                   relogio={ops.relogio}
@@ -290,12 +303,14 @@ function CentroOperacoes() {
                     variante="ct"
                     postos={TODOS}
                     emAlerta={ops.emAlerta}
+                    emPrevencao={ops.emPrevencao}
                   />
                   <MonitorBoard
                     titulo="Guarda 1 — Quadro de monitoramento"
                     variante="guarda"
                     postos={GUARDA1_POSTOS}
                     emAlerta={ops.emAlerta}
+                    emPrevencao={ops.emPrevencao}
                   />
                 </div>
                 <div>
@@ -351,7 +366,38 @@ function CentroOperacoes() {
                 >
                   Trilha de auditoria
                 </SectionTitle>
+
+                <div className="mb-3 border border-line border-l-[3px] border-l-signal bg-panel-2 px-4 py-3">
+                  <p className="font-display text-lead font-bold tracking-[0.1em] uppercase text-foreground">
+                    Para que serve a auditoria
+                  </p>
+                  <p className="mt-2 text-base2 text-muted-foreground">
+                    Toda ocorrência do PDA precisa ter registro de quem tratou, quando e por quê.
+                    A auditoria é a memória do turno: substitui o caderno da guarda e permite ao
+                    Cmt da Guarda ou ao Oficial de Dia reconstruir o que aconteceu, mesmo dias
+                    depois.
+                  </p>
+                  <ul className="mt-3 grid gap-1.5">
+                    {[
+                      "Acionamento — a linha é criada automaticamente quando um posto dispara o PDA (hora, posto, nível crítico).",
+                      "Tratativa — ao desarmar, o operador informa responsável, motivo e detalhe; isso vira uma segunda linha ligada ao mesmo posto.",
+                      "Reset da central — desarma todos os postos de uma vez e grava um registro com posto “TODOS”.",
+                      "Exportar CSV — gera o arquivo do turno para anexar à parte diária ou arquivar no COp.",
+                    ].map((t) => (
+                      <li key={t} className="grid grid-cols-[auto_minmax(0,1fr)] gap-2">
+                        <i aria-hidden className="mt-2 size-1.5 shrink-0 bg-signal" />
+                        <span className="text-base2 text-muted-foreground">{t}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="label-mono mt-3 normal-case">
+                    Os registros valem apenas para a sessão aberta no navegador — ao recarregar a
+                    página o histórico é zerado. Exporte o CSV antes de encerrar o turno.
+                  </p>
+                </div>
+
                 <AuditLog eventos={ops.eventos} />
+
               </section>
             )}
           </main>

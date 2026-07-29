@@ -84,7 +84,7 @@ export const POSTO_BY_ID = Object.fromEntries(POSTOS.map((p) => [p.id, p])) as R
 export const CT = { x: 50.8, y: 61.1 };
 
 /** Postos cobertos pelo quadro da Guarda 1 */
-export const GUARDA1_POSTOS: PostoId[] = ["1", "2", "3"];
+export const GUARDA1_POSTOS: PostoId[] = ["1", "2", "3", "4", "5", "6"];
 
 export const MOTIVOS = [
   "Falso positivo / teste",
