@@ -94,6 +94,12 @@ export function useOps() {
 
   const emAlerta = useCallback((id: PostoId) => alertas.includes(id), [alertas]);
 
+  /** Posto sem invasão, porém em prevenção porque outro posto acionou o PDA. */
+  const emPrevencao = useCallback(
+    (id: PostoId) => alertas.length > 0 && !alertas.includes(id),
+    [alertas],
+  );
+
   const csv = useMemo(() => {
     const linhas = [CSV_FIELDS.join(",")];
     for (const e of eventos) {
