@@ -186,6 +186,7 @@ function CentroOperacoes() {
                   <TacticalMap
                     postos={POSTOS}
                     emAlerta={ops.emAlerta}
+                    emPrevencao={ops.emPrevencao}
                     selecionado={selecionado}
                     onSelect={setSelecionado}
                     relogio={ops.relogio}
@@ -206,12 +207,14 @@ function CentroOperacoes() {
                         variante="ct"
                         postos={TODOS}
                         emAlerta={ops.emAlerta}
+                        emPrevencao={ops.emPrevencao}
                       />
                       <MonitorBoard
                         titulo="Guarda 1 — Quadro de monitoramento"
                         variante="guarda"
                         postos={GUARDA1_POSTOS}
                         emAlerta={ops.emAlerta}
+                        emPrevencao={ops.emPrevencao}
                       />
                     </div>
                   </div>
@@ -265,6 +268,7 @@ function CentroOperacoes() {
                 <TacticalMap
                   postos={POSTOS}
                   emAlerta={ops.emAlerta}
+                    emPrevencao={ops.emPrevencao}
                   selecionado={selecionado}
                   onSelect={setSelecionado}
                   relogio={ops.relogio}
@@ -290,12 +294,14 @@ function CentroOperacoes() {
                     variante="ct"
                     postos={TODOS}
                     emAlerta={ops.emAlerta}
+                    emPrevencao={ops.emPrevencao}
                   />
                   <MonitorBoard
                     titulo="Guarda 1 — Quadro de monitoramento"
                     variante="guarda"
                     postos={GUARDA1_POSTOS}
                     emAlerta={ops.emAlerta}
+                    emPrevencao={ops.emPrevencao}
                   />
                 </div>
                 <div>
