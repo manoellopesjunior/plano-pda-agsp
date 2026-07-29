@@ -1,15 +1,16 @@
-import { POSTO_BY_ID, type PostoId } from "@/lib/agsp";
+import { type PostoId } from "@/lib/agsp";
 import { cn } from "@/lib/utils";
-import { Siren } from "./Siren";
+import { Siren, type SirenTone } from "./Siren";
 
 interface Props {
   titulo: string;
   variante: "ct" | "guarda";
   postos: PostoId[];
   emAlerta: (id: PostoId) => boolean;
+  emPrevencao: (id: PostoId) => boolean;
 }
 
-export function MonitorBoard({ titulo, variante, postos, emAlerta }: Props) {
+export function MonitorBoard({ titulo, variante, postos, emAlerta, emPrevencao }: Props) {
   const ativos = postos.filter(emAlerta).length;
 
   return (
@@ -33,32 +34,43 @@ export function MonitorBoard({ titulo, variante, postos, emAlerta }: Props) {
         </span>
       </header>
 
-      <ul className="grid grid-cols-1 gap-px bg-line sm:grid-cols-2">
-        {postos.map((id, i) => {
+      <ul className="grid grid-cols-2 gap-px bg-line sm:grid-cols-3">
+        {postos.map((id) => {
           const on = emAlerta(id);
-          const ultimoImpar = postos.length % 2 === 1 && i === postos.length - 1;
-          const p = POSTO_BY_ID[id];
+          const prev = emPrevencao(id);
+          const tone: SirenTone = on ? "alert" : prev ? "warn" : "off";
           return (
             <li
               key={id}
               className={cn(
-                "grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-3 py-2.5 transition-colors",
-                on ? "bg-alert-bg" : "bg-panel-2",
-                ultimoImpar && "sm:col-span-2",
+                "grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 px-3 py-2.5 transition-colors",
+                on ? "bg-alert-bg" : prev ? "bg-warn/12" : "bg-panel-2",
               )}
+              style={
+                on || prev
+                  ? { animation: "alert-breathe 1.2s ease-in-out infinite" }
+                  : undefined
+              }
             >
               <div className="min-w-0">
                 <p
                   className={cn(
                     "truncate font-display text-base2 font-bold tracking-[0.1em] uppercase",
-                    on ? "text-alert" : "text-foreground",
+                    on ? "text-alert" : prev ? "text-warn" : "text-foreground",
                   )}
                 >
                   Posto {id}
                 </p>
-                <p className="label-mono truncate normal-case">{p.nome}</p>
+                <p
+                  className={cn(
+                    "font-mono text-micro tracking-[0.12em] uppercase",
+                    on ? "text-alert" : prev ? "text-warn" : "text-muted-foreground",
+                  )}
+                >
+                  {on ? "Crítico" : prev ? "Atenção" : "Normal"}
+                </p>
               </div>
-              <Siren on={on} />
+              <Siren tone={tone} size={18} />
             </li>
           );
         })}
