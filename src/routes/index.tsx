@@ -366,7 +366,38 @@ function CentroOperacoes() {
                 >
                   Trilha de auditoria
                 </SectionTitle>
+
+                <div className="mb-3 border border-line border-l-[3px] border-l-signal bg-panel-2 px-4 py-3">
+                  <p className="font-display text-lead font-bold tracking-[0.1em] uppercase text-foreground">
+                    Para que serve a auditoria
+                  </p>
+                  <p className="mt-2 text-base2 text-muted-foreground">
+                    Toda ocorrência do PDA precisa ter registro de quem tratou, quando e por quê.
+                    A auditoria é a memória do turno: substitui o caderno da guarda e permite ao
+                    Cmt da Guarda ou ao Oficial de Dia reconstruir o que aconteceu, mesmo dias
+                    depois.
+                  </p>
+                  <ul className="mt-3 grid gap-1.5">
+                    {[
+                      "Acionamento — a linha é criada automaticamente quando um posto dispara o PDA (hora, posto, nível crítico).",
+                      "Tratativa — ao desarmar, o operador informa responsável, motivo e detalhe; isso vira uma segunda linha ligada ao mesmo posto.",
+                      "Reset da central — desarma todos os postos de uma vez e grava um registro com posto “TODOS”.",
+                      "Exportar CSV — gera o arquivo do turno para anexar à parte diária ou arquivar no COp.",
+                    ].map((t) => (
+                      <li key={t} className="grid grid-cols-[auto_minmax(0,1fr)] gap-2">
+                        <i aria-hidden className="mt-2 size-1.5 shrink-0 bg-signal" />
+                        <span className="text-base2 text-muted-foreground">{t}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="label-mono mt-3 normal-case">
+                    Os registros valem apenas para a sessão aberta no navegador — ao recarregar a
+                    página o histórico é zerado. Exporte o CSV antes de encerrar o turno.
+                  </p>
+                </div>
+
                 <AuditLog eventos={ops.eventos} />
+
               </section>
             )}
           </main>
