@@ -94,21 +94,27 @@ export function TacticalMap({
         {/* pinos */}
         {postos.map((p) => {
           const on = emAlerta(p.id);
+          const prev = emPrevencao(p.id);
           const ativo = selecionado === p.id;
           return (
             <button
               key={p.id}
               type="button"
               onClick={() => onSelect?.(p.id)}
-              aria-label={`Posto ${p.id} — ${p.nome}${on ? " — em alerta" : " — normal"}`}
+              aria-label={`Posto ${p.id} — ${p.nome}${
+                on ? " — invasão em curso" : prev ? " — em prevenção" : " — normal"
+              }`}
               aria-pressed={ativo}
               className="absolute z-[8] -translate-x-1/2 -translate-y-full"
               style={{ left: `${p.x}%`, top: `${p.y}%` }}
             >
               <span className="relative flex flex-col items-center">
-                {on && (
+                {(on || prev) && (
                   <span
-                    className="absolute top-0 size-9 rounded-full border border-alert"
+                    className={cn(
+                      "absolute top-0 size-9 rounded-full border",
+                      on ? "border-alert" : "border-warn",
+                    )}
                     style={{ animation: "alert-ring 1.5s ease-out infinite" }}
                   />
                 )}
@@ -117,28 +123,36 @@ export function TacticalMap({
                     "grid size-8 place-items-center rounded-full border-2 font-display text-base2 font-bold transition-colors",
                     on
                       ? "border-alert bg-alert text-[#170303]"
-                      : "border-signal-soft bg-[rgba(6,20,30,.9)] text-signal-soft",
+                      : prev
+                        ? "border-warn bg-warn text-[#1a1000]"
+                        : "border-signal-soft bg-[rgba(6,20,30,.9)] text-signal-soft",
                     ativo && "ring-2 ring-signal ring-offset-2 ring-offset-[#02060c]",
                   )}
+                  style={
+                    on || prev
+                      ? { animation: "alert-breathe 1.1s ease-in-out infinite" }
+                      : undefined
+                  }
                 >
                   {p.id}
                 </span>
                 <span
                   className={cn(
                     "h-3 w-px",
-                    on ? "bg-alert" : "bg-signal-soft/70",
+                    on ? "bg-alert" : prev ? "bg-warn" : "bg-signal-soft/70",
                   )}
                 />
                 <span
                   className={cn(
                     "size-1.5 rounded-full",
-                    on ? "bg-alert" : "bg-signal-soft",
+                    on ? "bg-alert" : prev ? "bg-warn" : "bg-signal-soft",
                   )}
                 />
               </span>
             </button>
           );
         })}
+
 
         {/* rodapé de estado */}
         <div className="absolute inset-x-0 bottom-0 z-[7] grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 bg-[linear-gradient(180deg,transparent,rgba(4,10,18,.94))] px-3 pt-8 pb-2 pl-8">
