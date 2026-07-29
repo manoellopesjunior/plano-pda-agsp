@@ -112,33 +112,42 @@ function CentroOperacoes() {
           <ul className="mt-3 grid gap-px border border-line bg-line [grid-template-columns:repeat(auto-fit,minmax(120px,1fr))]">
             {POSTOS.map((p) => {
               const on = ops.emAlerta(p.id);
+              const prev = ops.emPrevencao(p.id);
               return (
                 <li
                   key={p.id}
                   className={cn(
                     "grid grid-cols-[auto_minmax(0,1fr)] items-center gap-2 px-3 py-2",
-                    on ? "bg-alert-bg" : "bg-panel-2",
+                    on ? "bg-alert-bg" : prev ? "bg-warn/12" : "bg-panel-2",
                   )}
                 >
                   <i
                     aria-hidden
-                    className={cn("size-2 rounded-full", on ? "bg-alert" : "bg-ok")}
-                    style={on ? { animation: "alert-breathe 1.2s ease-in-out infinite" } : undefined}
+                    className={cn(
+                      "size-2 rounded-full",
+                      on ? "bg-alert" : prev ? "bg-warn" : "bg-ok",
+                    )}
+                    style={
+                      on || prev
+                        ? { animation: "alert-breathe 1.2s ease-in-out infinite" }
+                        : undefined
+                    }
                   />
                   <div className="min-w-0">
                     <p className="label-mono truncate">{p.codigo}</p>
                     <p
                       className={cn(
                         "truncate font-display text-base2 font-bold tracking-[0.08em] uppercase",
-                        on ? "text-alert" : "text-ok",
+                        on ? "text-alert" : prev ? "text-warn" : "text-ok",
                       )}
                     >
-                      {on ? "Alerta" : "Normal"}
+                      {on ? "Crítico" : prev ? "Atenção" : "Normal"}
                     </p>
                   </div>
                 </li>
               );
             })}
+
           </ul>
 
           {/* Barra de estado + ações */}
