@@ -34,8 +34,9 @@ export function MonitorBoard({ titulo, variante, postos, emAlerta }: Props) {
       </header>
 
       <ul className="grid grid-cols-1 gap-px bg-line sm:grid-cols-2">
-        {postos.map((id) => {
+        {postos.map((id, i) => {
           const on = emAlerta(id);
+          const ultimoImpar = postos.length % 2 === 1 && i === postos.length - 1;
           const p = POSTO_BY_ID[id];
           return (
             <li
@@ -43,6 +44,7 @@ export function MonitorBoard({ titulo, variante, postos, emAlerta }: Props) {
               className={cn(
                 "grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-3 py-2.5 transition-colors",
                 on ? "bg-alert-bg" : "bg-panel-2",
+                ultimoImpar && "sm:col-span-2",
               )}
             >
               <div className="min-w-0">
