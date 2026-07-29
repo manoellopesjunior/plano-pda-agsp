@@ -81,6 +81,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@Lovable" },
+      { title: "AGSP — Centro de Operações da Guarda | PMAC" },
+      { property: "og:title", content: "AGSP — Centro de Operações da Guarda | PMAC" },
+      { name: "twitter:title", content: "AGSP — Centro de Operações da Guarda | PMAC" },
+      { name: "description", content: "Painel operacional do Arsenal de Guerra de São Paulo: mapa tático dos seis postos, quadros de sirene da CT e da Guarda 1, câmeras e auditoria de acionamentos." },
+      { property: "og:description", content: "Painel operacional do Arsenal de Guerra de São Paulo: mapa tático dos seis postos, quadros de sirene da CT e da Guarda 1, câmeras e auditoria de acionamentos." },
+      { name: "twitter:description", content: "Painel operacional do Arsenal de Guerra de São Paulo: mapa tático dos seis postos, quadros de sirene da CT e da Guarda 1, câmeras e auditoria de acionamentos." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/83683e79-65e0-4b66-ae2c-9ab9c34c6a7f/id-preview-97f090bf--88cf6190-b1e3-4304-8809-d5f0e9eb8ba4.lovable.app-1785339039013.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/83683e79-65e0-4b66-ae2c-9ab9c34c6a7f/id-preview-97f090bf--88cf6190-b1e3-4304-8809-d5f0e9eb8ba4.lovable.app-1785339039013.png" },
     ],
     links: [
       {

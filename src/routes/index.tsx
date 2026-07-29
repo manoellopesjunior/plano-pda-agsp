@@ -20,11 +20,11 @@ export const Route = createFileRoute("/")({
         content:
           "Painel operacional do Arsenal de Guerra de São Paulo: mapa tático dos seis postos, quadros de sirene da CT e da Guarda 1, câmeras e auditoria de acionamentos.",
       },
-      { property: "og:title", content: "AGSP — Centro de Operações da Guarda" },
+      { property: "og:title", content: "AGSP — Centro de Operações da Guarda | PMAC" },
       {
         property: "og:description",
         content:
-          "Mapa tático, quadros de monitoramento, câmeras e trilha de auditoria dos postos de sentinela do AGSP.",
+          "Painel operacional do Arsenal de Guerra de São Paulo: mapa tático dos seis postos, quadros de sirene da CT e da Guarda 1, câmeras e auditoria de acionamentos.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
