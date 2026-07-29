@@ -161,8 +161,12 @@ export function TacticalMap({
               <i className="size-1.5 rounded-full bg-ok" /> Operacional
             </span>
             <span className="label-mono flex items-center gap-1.5">
-              <i className="size-1.5 rounded-full bg-alert" /> Alerta
+              <i className="size-1.5 rounded-full bg-warn" /> Prevenção
             </span>
+            <span className="label-mono flex items-center gap-1.5">
+              <i className="size-1.5 rounded-full bg-alert" /> Invasão
+            </span>
+
           </div>
           <span
             className={cn(
