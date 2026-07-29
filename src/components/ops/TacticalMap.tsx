@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 interface Props {
   postos: Posto[];
   emAlerta: (id: PostoId) => boolean;
+  emPrevencao: (id: PostoId) => boolean;
   selecionado?: PostoId | null;
   onSelect?: (id: PostoId) => void;
   relogio: string;
@@ -14,6 +15,7 @@ interface Props {
 export function TacticalMap({
   postos,
   emAlerta,
+  emPrevencao,
   selecionado,
   onSelect,
   relogio,
