@@ -1,4 +1,4 @@
-import sat from "@/assets/agsp-satelite.jpg.asset.json";
+import sat from "@/assets/agsp-satelite-v2.jpg.asset.json";
 import { CT, type Posto, type PostoId } from "@/lib/agsp";
 import { cn } from "@/lib/utils";
 
@@ -23,7 +23,7 @@ export function TacticalMap({
 }: Props) {
   return (
     <figure className="relative w-full overflow-hidden border border-signal/35 bg-[#02060c] shadow-[0_0_0_4px_var(--panel-2),0_24px_60px_-20px_rgba(0,0,0,.8)]">
-      <div className="relative aspect-[1600/1570] w-full">
+      <div className="relative aspect-[1485/1835] w-full">
         <img
           src={sat.url}
           alt="Vista aérea do Arsenal de Guerra de São Paulo com os seis postos de sentinela"

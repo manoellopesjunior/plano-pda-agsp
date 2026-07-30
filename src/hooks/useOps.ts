@@ -7,6 +7,8 @@ import {
   type Nivel,
   type PostoId,
 } from "@/lib/agsp";
+import { gerarRelatorioPdf } from "@/lib/relatorio";
+
 
 const hora = () =>
   new Date().toLocaleTimeString("pt-BR", {
@@ -22,11 +24,12 @@ export function useOps() {
   const [alertas, setAlertas] = useState<PostoId[]>([]);
   const [eventos, setEventos] = useState<Evento[]>([]);
   const [tratativa, setTratativa] = useState<PostoId | "todos" | null>(null);
-  const [relogio, setRelogio] = useState(() => hora());
+  const [relogio, setRelogio] = useState("--:--:--");
   const montado = useRef(false);
 
   useEffect(() => {
     montado.current = true;
+    setRelogio(hora());
     const t = setInterval(() => setRelogio(hora()), 1000);
     return () => clearInterval(t);
   }, []);
@@ -120,6 +123,11 @@ export function useOps() {
     URL.revokeObjectURL(url);
   }, [csv]);
 
+  const exportarPdf = useCallback(() => {
+    gerarRelatorioPdf(eventos);
+  }, [eventos]);
+
+
   return {
     postos: POSTOS,
     alertas,
@@ -134,6 +142,8 @@ export function useOps() {
     concluirTratativa,
     concluirLimpeza,
     exportar,
+    exportarPdf,
+
   };
 }
 

@@ -165,9 +165,17 @@ function CentroOperacoes() {
               >
                 Resetar central
               </OpsButton>
+              <OpsButton
+                variant="signal"
+                disabled={!ops.eventos.length}
+                onClick={ops.exportarPdf}
+              >
+                Exportar relatório PDF
+              </OpsButton>
               <OpsButton disabled={!ops.eventos.length} onClick={ops.exportar}>
                 Exportar CSV
               </OpsButton>
+
             </div>
           </div>
 
@@ -382,7 +390,7 @@ function CentroOperacoes() {
                       "Acionamento — a linha é criada automaticamente quando um posto dispara o PDA (hora, posto, nível crítico).",
                       "Tratativa — ao desarmar, o operador informa responsável, motivo e detalhe; isso vira uma segunda linha ligada ao mesmo posto.",
                       "Reset da central — desarma todos os postos de uma vez e grava um registro com posto “TODOS”.",
-                      "Exportar CSV — gera o arquivo do turno para anexar à parte diária ou arquivar no COp.",
+                      "Exportar relatório PDF — gera a parte de ocorrências do turno pronta para assinatura e arquivamento; o CSV continua disponível para planilha.",
                     ].map((t) => (
                       <li key={t} className="grid grid-cols-[auto_minmax(0,1fr)] gap-2">
                         <i aria-hidden className="mt-2 size-1.5 shrink-0 bg-signal" />
