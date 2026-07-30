@@ -120,6 +120,11 @@ export function useOps() {
     URL.revokeObjectURL(url);
   }, [csv]);
 
+  const exportarPdf = useCallback(() => {
+    gerarRelatorioPdf(eventos);
+  }, [eventos]);
+
+
   return {
     postos: POSTOS,
     alertas,
