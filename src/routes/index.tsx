@@ -165,9 +165,17 @@ function CentroOperacoes() {
               >
                 Resetar central
               </OpsButton>
+              <OpsButton
+                variant="signal"
+                disabled={!ops.eventos.length}
+                onClick={ops.exportarPdf}
+              >
+                Exportar relatório PDF
+              </OpsButton>
               <OpsButton disabled={!ops.eventos.length} onClick={ops.exportar}>
                 Exportar CSV
               </OpsButton>
+
             </div>
           </div>
 
