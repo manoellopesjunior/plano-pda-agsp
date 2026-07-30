@@ -141,6 +141,8 @@ export function useOps() {
     concluirTratativa,
     concluirLimpeza,
     exportar,
+    exportarPdf,
+
   };
 }
 
