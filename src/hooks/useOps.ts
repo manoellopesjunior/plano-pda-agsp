@@ -24,11 +24,12 @@ export function useOps() {
   const [alertas, setAlertas] = useState<PostoId[]>([]);
   const [eventos, setEventos] = useState<Evento[]>([]);
   const [tratativa, setTratativa] = useState<PostoId | "todos" | null>(null);
-  const [relogio, setRelogio] = useState(() => hora());
+  const [relogio, setRelogio] = useState("--:--:--");
   const montado = useRef(false);
 
   useEffect(() => {
     montado.current = true;
+    setRelogio(hora());
     const t = setInterval(() => setRelogio(hora()), 1000);
     return () => clearInterval(t);
   }, []);
