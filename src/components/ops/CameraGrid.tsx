@@ -1,4 +1,4 @@
-import sat from "@/assets/agsp-satelite.jpg.asset.json";
+import sat from "@/assets/agsp-satelite-v2.jpg.asset.json";
 import type { Posto, PostoId } from "@/lib/agsp";
 import { cn } from "@/lib/utils";
 
