@@ -20,8 +20,8 @@ export const POSTOS: Posto[] = [
     desc: "Acesso frontal — triagem de pessoal e veículos.",
     lat: -23.51435,
     lon: -46.86842,
-    x: 38.6,
-    y: 93.6,
+    x: 33.6,
+    y: 70.2,
   },
   {
     id: "2",
@@ -30,8 +30,8 @@ export const POSTOS: Posto[] = [
     desc: "Perímetro leste — observação de divisa.",
     lat: -23.51266,
     lon: -46.86674,
-    x: 71,
-    y: 68.4,
+    x: 65.4,
+    y: 51.6,
   },
   {
     id: "3",
@@ -40,8 +40,8 @@ export const POSTOS: Posto[] = [
     desc: "Zona restrita / paiol — segurança máxima.",
     lat: -23.51154,
     lon: -46.86693,
-    x: 73,
-    y: 41.2,
+    x: 70.1,
+    y: 32.4,
   },
   {
     id: "4",
@@ -50,8 +50,8 @@ export const POSTOS: Posto[] = [
     desc: "Perímetro norte — via e divisa sensível.",
     lat: -23.51041,
     lon: -46.86644,
-    x: 70.5,
-    y: 21.5,
+    x: 69.8,
+    y: 17,
   },
   {
     id: "5",
@@ -60,8 +60,8 @@ export const POSTOS: Posto[] = [
     desc: "Flanco noroeste — comunicações.",
     lat: -23.51053,
     lon: -46.8699,
-    x: 33.3,
-    y: 18.7,
+    x: 29.8,
+    y: 13.9,
   },
   {
     id: "6",
@@ -70,8 +70,8 @@ export const POSTOS: Posto[] = [
     desc: "Flanco oeste — viaturas e apoio.",
     lat: -23.51244,
     lon: -46.8697,
-    x: 38.6,
-    y: 61.1,
+    x: 33.9,
+    y: 46.8,
   },
 ];
 
@@ -81,7 +81,8 @@ export const POSTO_BY_ID = Object.fromEntries(POSTOS.map((p) => [p.id, p])) as R
 >;
 
 /** Central Tática — referência fixa no terreno */
-export const CT = { x: 50.8, y: 61.1 };
+export const CT = { x: 46.2, y: 46.7 };
+
 
 /** Postos cobertos pelo quadro da Guarda 1 */
 export const GUARDA1_POSTOS: PostoId[] = ["1", "2", "3", "4", "5", "6"];
