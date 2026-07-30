@@ -7,6 +7,8 @@ import {
   type Nivel,
   type PostoId,
 } from "@/lib/agsp";
+import { gerarRelatorioPdf } from "@/lib/relatorio";
+
 
 const hora = () =>
   new Date().toLocaleTimeString("pt-BR", {
