@@ -6,8 +6,10 @@ import { CameraGrid, MiniCams } from "@/components/ops/CameraGrid";
 import { MonitorBoard } from "@/components/ops/MonitorBoard";
 import { TacticalMap } from "@/components/ops/TacticalMap";
 import { TratativaForm } from "@/components/ops/TratativaForm";
+import { InstallButton } from "@/components/ops/InstallButton";
 import { Chip, OpsButton, SectionTitle, StatusMsg } from "@/components/ops/primitives";
 import { useOps } from "@/hooks/useOps";
+import { useSirene } from "@/hooks/useSirene";
 import { GUARDA1_POSTOS, POSTOS, TELAS, type PostoId, type Tela } from "@/lib/agsp";
 import { cn } from "@/lib/utils";
 
@@ -37,6 +39,7 @@ const TODOS: PostoId[] = ["1", "2", "3", "4", "5", "6"];
 
 function CentroOperacoes() {
   const ops = useOps();
+  const sirene = useSirene(ops.alertas);
   const [tela, setTela] = useState<Tela>("Visão Geral");
   const [selecionado, setSelecionado] = useState<PostoId | null>(null);
 
@@ -154,10 +157,18 @@ function CentroOperacoes() {
           <div className="mt-3 grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
             <StatusMsg kind={ops.nAlertas ? "alert" : "ok"}>
               {ops.nAlertas
-                ? `${ops.nAlertas} posto(s) com acionamento de PDA pendente de tratativa`
+                ? `${ops.nAlertas} posto(s) com acionamento de PDA pendente de tratativa — megafone anunciando "PDA POSTO ${ops.alertas.join(" / ")}"`
                 : "Todos os seis postos de sentinela operando dentro da normalidade"}
             </StatusMsg>
             <div className="flex flex-wrap gap-2">
+              <OpsButton
+                variant={sirene.somAtivo ? "signal" : "alert"}
+                onClick={sirene.alternarSom}
+                aria-pressed={sirene.somAtivo}
+              >
+                {sirene.somAtivo ? "Megafone: ligado" : "Megafone: mudo"}
+              </OpsButton>
+              <InstallButton />
               <OpsButton
                 variant="alert"
                 disabled={!ops.nAlertas}
@@ -178,6 +189,7 @@ function CentroOperacoes() {
 
             </div>
           </div>
+
 
           {ops.tratativa && (
             <div className="mt-3">
@@ -262,6 +274,9 @@ function CentroOperacoes() {
                               Acionar PDA
                             </OpsButton>
                           )}
+                          <OpsButton onClick={() => sirene.testar(postoAtivo.id)}>
+                            Testar megafone
+                          </OpsButton>
                           <OpsButton onClick={() => setSelecionado(null)}>Fechar</OpsButton>
                         </div>
                       </div>
