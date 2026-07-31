@@ -154,10 +154,18 @@ function CentroOperacoes() {
           <div className="mt-3 grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
             <StatusMsg kind={ops.nAlertas ? "alert" : "ok"}>
               {ops.nAlertas
-                ? `${ops.nAlertas} posto(s) com acionamento de PDA pendente de tratativa`
+                ? `${ops.nAlertas} posto(s) com acionamento de PDA pendente de tratativa — megafone anunciando "PDA POSTO ${ops.alertas.join(" / ")}"`
                 : "Todos os seis postos de sentinela operando dentro da normalidade"}
             </StatusMsg>
             <div className="flex flex-wrap gap-2">
+              <OpsButton
+                variant={sirene.somAtivo ? "signal" : "alert"}
+                onClick={sirene.alternarSom}
+                aria-pressed={sirene.somAtivo}
+              >
+                {sirene.somAtivo ? "Megafone: ligado" : "Megafone: mudo"}
+              </OpsButton>
+              <InstallButton />
               <OpsButton
                 variant="alert"
                 disabled={!ops.nAlertas}
@@ -178,6 +186,7 @@ function CentroOperacoes() {
 
             </div>
           </div>
+
 
           {ops.tratativa && (
             <div className="mt-3">
