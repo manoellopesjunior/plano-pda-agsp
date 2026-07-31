@@ -274,6 +274,9 @@ function CentroOperacoes() {
                               Acionar PDA
                             </OpsButton>
                           )}
+                          <OpsButton onClick={() => sirene.testar(postoAtivo.id)}>
+                            Testar megafone
+                          </OpsButton>
                           <OpsButton onClick={() => setSelecionado(null)}>Fechar</OpsButton>
                         </div>
                       </div>
