@@ -1,0 +1,17 @@
+{
+  "name": "AGSP — Centro de Operações da Guarda",
+  "short_name": "AGSP Guarda",
+  "description": "Painel operacional do Arsenal de Guerra de São Paulo: postos de sentinela, PDA, megafone e auditoria.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#070d16",
+  "theme_color": "#070d16",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
