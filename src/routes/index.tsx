@@ -6,8 +6,10 @@ import { CameraGrid, MiniCams } from "@/components/ops/CameraGrid";
 import { MonitorBoard } from "@/components/ops/MonitorBoard";
 import { TacticalMap } from "@/components/ops/TacticalMap";
 import { TratativaForm } from "@/components/ops/TratativaForm";
+import { InstallButton } from "@/components/ops/InstallButton";
 import { Chip, OpsButton, SectionTitle, StatusMsg } from "@/components/ops/primitives";
 import { useOps } from "@/hooks/useOps";
+import { useSirene } from "@/hooks/useSirene";
 import { GUARDA1_POSTOS, POSTOS, TELAS, type PostoId, type Tela } from "@/lib/agsp";
 import { cn } from "@/lib/utils";
 
