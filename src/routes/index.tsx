@@ -39,6 +39,7 @@ const TODOS: PostoId[] = ["1", "2", "3", "4", "5", "6"];
 
 function CentroOperacoes() {
   const ops = useOps();
+  const sirene = useSirene(ops.alertas);
   const [tela, setTela] = useState<Tela>("Visão Geral");
   const [selecionado, setSelecionado] = useState<PostoId | null>(null);
 
