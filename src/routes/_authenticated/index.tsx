@@ -76,17 +76,27 @@ function CentroOperacoes() {
                 </p>
               </div>
             </div>
-            <div className="hidden shrink-0 items-center gap-2 sm:flex">
-              <Chip tone="signal">
+            <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
+              <Chip tone="signal" className="hidden sm:inline-flex">
                 <i className="size-1.5 rounded-full bg-ok" />
                 Enlace ativo
               </Chip>
-              <Chip tone={ops.nAlertas ? "alert" : "ok"}>
+              <Chip tone={ops.nAlertas ? "alert" : "ok"} className="hidden sm:inline-flex">
                 {ops.nAlertas ? `${ops.nAlertas} alerta` : "Perímetro íntegro"}
               </Chip>
-              <Chip>{ops.relogio}</Chip>
+              <Chip className="hidden sm:inline-flex">{ops.relogio}</Chip>
+              <Chip tone="signal">{auth.perfil?.nome || auth.perfil?.email || "Operador"}</Chip>
+              {auth.isAdmin && (
+                <Link to="/admin">
+                  <OpsButton variant="signal">Acessos</OpsButton>
+                </Link>
+              )}
+              <OpsButton variant="alert" onClick={() => void auth.sair()}>
+                Sair
+              </OpsButton>
             </div>
           </header>
+
 
           {/* Navegação */}
           <nav
