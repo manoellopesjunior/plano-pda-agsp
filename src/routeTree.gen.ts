@@ -14,6 +14,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as ApiPublicBootstrapAdminRouteImport } from './routes/api/public/bootstrap-admin'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
@@ -39,18 +40,25 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ApiPublicBootstrapAdminRoute = ApiPublicBootstrapAdminRouteImport.update({
+  id: '/api/public/bootstrap-admin',
+  path: '/api/public/bootstrap-admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/api/public/bootstrap-admin': typeof ApiPublicBootstrapAdminRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/': typeof AuthenticatedIndexRoute
+  '/api/public/bootstrap-admin': typeof ApiPublicBootstrapAdminRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -59,12 +67,23 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/api/public/bootstrap-admin': typeof ApiPublicBootstrapAdminRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/reset-password' | '/admin'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/reset-password'
+    | '/admin'
+    | '/api/public/bootstrap-admin'
   fileRoutesByTo: FileRoutesByTo
-  to: '/auth' | '/reset-password' | '/admin' | '/'
+  to:
+    | '/auth'
+    | '/reset-password'
+    | '/admin'
+    | '/'
+    | '/api/public/bootstrap-admin'
   id:
     | '__root__'
     | '/_authenticated'
@@ -72,12 +91,14 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/_authenticated/admin'
     | '/_authenticated/'
+    | '/api/public/bootstrap-admin'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  ApiPublicBootstrapAdminRoute: typeof ApiPublicBootstrapAdminRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -117,6 +138,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/bootstrap-admin': {
+      id: '/api/public/bootstrap-admin'
+      path: '/api/public/bootstrap-admin'
+      fullPath: '/api/public/bootstrap-admin'
+      preLoaderRoute: typeof ApiPublicBootstrapAdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -137,7 +165,18 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  ApiPublicBootstrapAdminRoute: ApiPublicBootstrapAdminRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
