@@ -13,7 +13,7 @@ import { useSirene } from "@/hooks/useSirene";
 import { GUARDA1_POSTOS, POSTOS, TELAS, type PostoId, type Tela } from "@/lib/agsp";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/_authenticated/")({
   head: () => ({
     meta: [
       { title: "AGSP — Centro de Operações da Guarda | PMAC" },
