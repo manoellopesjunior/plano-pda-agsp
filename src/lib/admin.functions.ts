@@ -1,50 +1,20 @@
 import { createServerFn } from "@tanstack/react-start";
-import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-
-const BAN_FOREVER = "876000h";
-
-export type UsuarioAdmin = {
-  id: string;
-  nome: string;
-  email: string;
-  posto: string;
-  ativo: boolean;
-  role: "admin" | "oficial" | "sentinela";
-  criadoEm: string;
-};
-
-const roleSchema = z.enum(["admin", "oficial", "sentinela"]);
-
-const criarSchema = z.object({
-  nome: z.string().trim().min(2).max(120),
-  email: z.string().trim().email().max(255),
-  senha: z.string().min(8).max(128),
-  posto: z.string().trim().max(120).default(""),
-  role: roleSchema,
-});
-
-const senhaSchema = z.object({
-  userId: z.string().uuid(),
-  senha: z.string().min(8).max(128),
-});
-
-const ativoSchema = z.object({ userId: z.string().uuid(), ativo: z.boolean() });
-const idSchema = z.object({ userId: z.string().uuid() });
-
-async function exigirAdmin(context: { supabase: any; userId: string }) {
-  const { data, error } = await context.supabase.rpc("has_role", {
-    _user_id: context.userId,
-    _role: "admin",
-  });
-  if (error || !data) throw new Error("Acesso negado: perfil administrador exigido.");
-}
+import {
+  BAN_FOREVER,
+  ativoSchema,
+  criarSchema,
+  exigirAdmin,
+  idSchema,
+  senhaSchema,
+  type UsuarioAdmin,
+} from "@/lib/admin.shared";
 
 export const listarUsuarios = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<UsuarioAdmin[]> => {
-    await exigirAdmin(context);
+    await exigirAdmin(context as never);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     const [{ data: perfis, error: e1 }, { data: funcoes, error: e2 }] = await Promise.all([
@@ -73,7 +43,7 @@ export const criarUsuario = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => criarSchema.parse(input))
   .handler(async ({ data, context }) => {
-    await exigirAdmin(context);
+    await exigirAdmin(context as never);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     const { data: criado, error } = await supabaseAdmin.auth.admin.createUser({
@@ -99,7 +69,7 @@ export const alterarSenhaUsuario = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => senhaSchema.parse(input))
   .handler(async ({ data, context }) => {
-    await exigirAdmin(context);
+    await exigirAdmin(context as never);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin.auth.admin.updateUserById(data.userId, {
       password: data.senha,
@@ -112,7 +82,7 @@ export const definirSituacaoUsuario = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => ativoSchema.parse(input))
   .handler(async ({ data, context }) => {
-    await exigirAdmin(context);
+    await exigirAdmin(context as never);
     if (data.userId === context.userId && !data.ativo) {
       throw new Error("Não é possível desativar o próprio acesso.");
     }
@@ -135,7 +105,7 @@ export const excluirUsuario = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => idSchema.parse(input))
   .handler(async ({ data, context }) => {
-    await exigirAdmin(context);
+    await exigirAdmin(context as never);
     if (data.userId === context.userId) {
       throw new Error("Não é possível excluir o próprio acesso.");
     }
