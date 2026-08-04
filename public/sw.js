@@ -20,7 +20,11 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("fetch", (event) => {
   const req = event.request;
-  if (req.method !== "GET" || new URL(req.url).origin !== self.location.origin) return;
+  const url = new URL(req.url);
+  if (req.method !== "GET" || url.origin !== self.location.origin) return;
+  // Rotas de autenticação nunca são cacheadas.
+  if (url.pathname.startsWith("/auth") || url.pathname.startsWith("/reset-password")) return;
+
 
   event.respondWith(
     fetch(req)
