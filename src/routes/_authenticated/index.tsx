@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { AuditLog } from "@/components/ops/AuditLog";
 import { CameraGrid, MiniCams } from "@/components/ops/CameraGrid";
@@ -8,6 +8,7 @@ import { TacticalMap } from "@/components/ops/TacticalMap";
 import { TratativaForm } from "@/components/ops/TratativaForm";
 import { InstallButton } from "@/components/ops/InstallButton";
 import { Chip, OpsButton, SectionTitle, StatusMsg } from "@/components/ops/primitives";
+import { useAuth } from "@/hooks/useAuth";
 import { useOps } from "@/hooks/useOps";
 import { useSirene } from "@/hooks/useSirene";
 import { GUARDA1_POSTOS, POSTOS, TELAS, type PostoId, type Tela } from "@/lib/agsp";
@@ -38,6 +39,7 @@ export const Route = createFileRoute("/_authenticated/")({
 const TODOS: PostoId[] = ["1", "2", "3", "4", "5", "6"];
 
 function CentroOperacoes() {
+  const auth = useAuth();
   const ops = useOps();
   const sirene = useSirene(ops.alertas);
   const [tela, setTela] = useState<Tela>("Visão Geral");
