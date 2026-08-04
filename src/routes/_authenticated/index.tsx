@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { AuditLog } from "@/components/ops/AuditLog";
 import { CameraGrid, MiniCams } from "@/components/ops/CameraGrid";
@@ -8,12 +8,13 @@ import { TacticalMap } from "@/components/ops/TacticalMap";
 import { TratativaForm } from "@/components/ops/TratativaForm";
 import { InstallButton } from "@/components/ops/InstallButton";
 import { Chip, OpsButton, SectionTitle, StatusMsg } from "@/components/ops/primitives";
+import { useAuth } from "@/hooks/useAuth";
 import { useOps } from "@/hooks/useOps";
 import { useSirene } from "@/hooks/useSirene";
 import { GUARDA1_POSTOS, POSTOS, TELAS, type PostoId, type Tela } from "@/lib/agsp";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/_authenticated/")({
   head: () => ({
     meta: [
       { title: "AGSP — Centro de Operações da Guarda | PMAC" },
@@ -38,6 +39,7 @@ export const Route = createFileRoute("/")({
 const TODOS: PostoId[] = ["1", "2", "3", "4", "5", "6"];
 
 function CentroOperacoes() {
+  const auth = useAuth();
   const ops = useOps();
   const sirene = useSirene(ops.alertas);
   const [tela, setTela] = useState<Tela>("Visão Geral");
@@ -76,17 +78,27 @@ function CentroOperacoes() {
                 </p>
               </div>
             </div>
-            <div className="hidden shrink-0 items-center gap-2 sm:flex">
-              <Chip tone="signal">
+            <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
+              <Chip tone="signal" className="hidden sm:inline-flex">
                 <i className="size-1.5 rounded-full bg-ok" />
                 Enlace ativo
               </Chip>
-              <Chip tone={ops.nAlertas ? "alert" : "ok"}>
+              <Chip tone={ops.nAlertas ? "alert" : "ok"} className="hidden sm:inline-flex">
                 {ops.nAlertas ? `${ops.nAlertas} alerta` : "Perímetro íntegro"}
               </Chip>
-              <Chip>{ops.relogio}</Chip>
+              <Chip className="hidden sm:inline-flex">{ops.relogio}</Chip>
+              <Chip tone="signal">{auth.perfil?.nome || auth.perfil?.email || "Operador"}</Chip>
+              {auth.isAdmin && (
+                <Link to="/admin">
+                  <OpsButton variant="signal">Acessos</OpsButton>
+                </Link>
+              )}
+              <OpsButton variant="alert" onClick={() => void auth.sair()}>
+                Sair
+              </OpsButton>
             </div>
           </header>
+
 
           {/* Navegação */}
           <nav
