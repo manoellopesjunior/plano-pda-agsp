@@ -255,24 +255,15 @@ function CentroOperacoes() {
 
                 <section className="grid content-start gap-4">
                   <div>
-                    <SectionTitle>Quadros de sirene</SectionTitle>
-                    <div className="grid gap-3">
-                      <MonitorBoard
-                        titulo="CT — Quadro de monitoramento"
-                        variante="ct"
-                        postos={TODOS}
-                        emAlerta={ops.emAlerta}
-                        emPrevencao={ops.emPrevencao}
-                      />
-                      <MonitorBoard
-                        titulo="Guarda 1 — Quadro de monitoramento"
-                        variante="guarda"
-                        postos={GUARDA1_POSTOS}
-                        emAlerta={ops.emAlerta}
-                        emPrevencao={ops.emPrevencao}
-                      />
-                    </div>
+                    <SectionTitle>Quadro de postos</SectionTitle>
+                    <MonitorBoard
+                      titulo="Quadro de postos"
+                      postos={TODOS}
+                      emAlerta={ops.emAlerta}
+                      emPrevencao={ops.emPrevencao}
+                    />
                   </div>
+
 
                   <div>
                     <SectionTitle>
@@ -348,16 +339,8 @@ function CentroOperacoes() {
               <section className="grid gap-4 lg:grid-cols-2">
                 <div className="grid content-start gap-3">
                   <MonitorBoard
-                    titulo="CT — Quadro de monitoramento"
-                    variante="ct"
+                    titulo="Quadro de postos"
                     postos={TODOS}
-                    emAlerta={ops.emAlerta}
-                    emPrevencao={ops.emPrevencao}
-                  />
-                  <MonitorBoard
-                    titulo="Guarda 1 — Quadro de monitoramento"
-                    variante="guarda"
-                    postos={GUARDA1_POSTOS}
                     emAlerta={ops.emAlerta}
                     emPrevencao={ops.emPrevencao}
                   />
@@ -367,6 +350,7 @@ function CentroOperacoes() {
                   <ul className="grid gap-px border border-line bg-line">
                     {POSTOS.map((p) => {
                       const on = ops.emAlerta(p.id);
+                      const podeAgir = on ? auth.podeTratar(p.id) : auth.podeAcionar(p.id);
                       return (
                         <li
                           key={p.id}
@@ -381,22 +365,26 @@ function CentroOperacoes() {
                             </p>
                             <p className="label-mono truncate normal-case">{p.desc}</p>
                           </div>
-                          {on ? (
-                            <OpsButton
-                              variant="alert"
-                              className="shrink-0"
-                              onClick={() => abrirTratativa(p.id)}
-                            >
-                              Tratar
-                            </OpsButton>
+                          {podeAgir ? (
+                            on ? (
+                              <OpsButton
+                                variant="alert"
+                                className="shrink-0"
+                                onClick={() => abrirTratativa(p.id)}
+                              >
+                                Tratar
+                              </OpsButton>
+                            ) : (
+                              <OpsButton
+                                variant="signal"
+                                className="shrink-0"
+                                onClick={() => ops.acionar(p.id)}
+                              >
+                                Acionar
+                              </OpsButton>
+                            )
                           ) : (
-                            <OpsButton
-                              variant="signal"
-                              className="shrink-0"
-                              onClick={() => ops.acionar(p.id)}
-                            >
-                              Acionar
-                            </OpsButton>
+                            <span className="label-mono shrink-0">Somente leitura</span>
                           )}
                         </li>
                       );
@@ -405,6 +393,7 @@ function CentroOperacoes() {
                 </div>
               </section>
             )}
+
 
             {tela === "Auditoria" && (
               <section>
