@@ -39,16 +39,30 @@ export const ativoSchema = z.object({ userId: z.string().uuid(), ativo: z.boolea
 export const idSchema = z.object({ userId: z.string().uuid() });
 
 type AdminCtx = {
-  supabase: { rpc: (fn: string, args: Record<string, unknown>) => Promise<{ data: unknown; error: unknown }> };
+  supabase: {
+    from: (table: string) => {
+      select: (cols: string) => {
+        eq: (col: string, value: unknown) => {
+          eq: (col: string, value: unknown) => {
+            maybeSingle: () => Promise<{ data: unknown; error: unknown }>;
+          };
+        };
+      };
+    };
+  };
   userId: string;
 };
 
 export async function exigirAdmin(context: AdminCtx) {
-  const { data, error } = await context.supabase.rpc("has_role", {
-    _user_id: context.userId,
-    _role: "admin",
-  });
-  if (error || data !== true) {
+  // Verificação server-side com o token do próprio usuário (RLS aplicada).
+  const { data, error } = await context.supabase
+    .from("user_roles")
+    .select("role")
+    .eq("user_id", context.userId)
+    .eq("role", "admin")
+    .maybeSingle();
+
+  if (error || !data) {
     throw new Error("Acesso negado: perfil administrador exigido.");
   }
 }
