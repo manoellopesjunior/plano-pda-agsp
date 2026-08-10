@@ -170,7 +170,7 @@ function CentroOperacoes() {
             <StatusMsg kind={ops.nAlertas ? "alert" : "ok"}>
               {ops.nAlertas
                 ? `${ops.nAlertas} posto(s) com acionamento de PDA pendente de tratativa — megafone anunciando "PDA POSTO ${ops.alertas.join(" / ")}"`
-                : "Todos os seis postos de sentinela operando dentro da normalidade"}
+                : "Todos os seis postos operando dentro da normalidade"}
             </StatusMsg>
             <div className="flex flex-wrap gap-2">
               <OpsButton
@@ -181,13 +181,15 @@ function CentroOperacoes() {
                 {sirene.somAtivo ? "Megafone: ligado" : "Megafone: mudo"}
               </OpsButton>
               <InstallButton />
-              <OpsButton
-                variant="alert"
-                disabled={!ops.nAlertas}
-                onClick={() => abrirTratativa("todos")}
-              >
-                Resetar central
-              </OpsButton>
+              {auth.isAdmin && (
+                <OpsButton
+                  variant="alert"
+                  disabled={!ops.nAlertas}
+                  onClick={() => abrirTratativa("todos")}
+                >
+                  Resetar central
+                </OpsButton>
+              )}
               <OpsButton
                 variant="signal"
                 disabled={!ops.eventos.length}
@@ -195,12 +197,24 @@ function CentroOperacoes() {
               >
                 Exportar relatório PDF
               </OpsButton>
-              <OpsButton disabled={!ops.eventos.length} onClick={ops.exportar}>
-                Exportar CSV
-              </OpsButton>
-
             </div>
           </div>
+
+          {!auth.podeOperar && auth.role !== null && (
+            <div className="mt-3">
+              <StatusMsg kind="ok">
+                Perfil de consulta: você acompanha mapa, postos, câmeras, quadro e auditoria, sem
+                permissão para acionar ou tratar PDA.
+              </StatusMsg>
+            </div>
+          )}
+
+          {ops.negado && (
+            <div className="mt-3">
+              <StatusMsg kind="alert">{ops.negado}</StatusMsg>
+            </div>
+          )}
+
 
 
           {ops.tratativa && (
