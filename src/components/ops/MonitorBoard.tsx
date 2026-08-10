@@ -3,23 +3,17 @@ import { cn } from "@/lib/utils";
 import { Siren, type SirenTone } from "./Siren";
 
 interface Props {
-  titulo: string;
-  variante: "ct" | "guarda";
+  titulo?: string;
   postos: PostoId[];
   emAlerta: (id: PostoId) => boolean;
   emPrevencao: (id: PostoId) => boolean;
 }
 
-export function MonitorBoard({ titulo, variante, postos, emAlerta, emPrevencao }: Props) {
+export function MonitorBoard({ titulo = "Quadro de postos", postos, emAlerta, emPrevencao }: Props) {
   const ativos = postos.filter(emAlerta).length;
 
   return (
-    <section
-      className={cn(
-        "border bg-panel-2",
-        variante === "ct" ? "border-signal/35" : "border-warn/30",
-      )}
-    >
+    <section className="border border-signal/35 bg-panel-2">
       <header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-line bg-panel px-3 py-2">
         <h3 className="truncate font-display text-base2 font-bold tracking-[0.14em] uppercase text-foreground">
           {titulo}

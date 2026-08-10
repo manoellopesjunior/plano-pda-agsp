@@ -1,14 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import {
-  CSV_FIELDS,
-  POSTO_BY_ID,
-  POSTOS,
-  type Evento,
-  type Nivel,
-  type PostoId,
-} from "@/lib/agsp";
+import { POSTO_BY_ID, POSTOS, type Evento, type Nivel, type PostoId } from "@/lib/agsp";
 import { gerarRelatorioPdf } from "@/lib/relatorio";
 
+export type OpsPermissoes = {
+  podeAcionar: (alvo: PostoId) => boolean;
+  podeTratar: (alvo: PostoId | "todos") => boolean;
+};
 
 const hora = () =>
   new Date().toLocaleTimeString("pt-BR", {
@@ -20,12 +17,17 @@ const hora = () =>
 let seq = 0;
 const nextId = () => `ev-${Date.now()}-${seq++}`;
 
-export function useOps() {
+export function useOps(perm: OpsPermissoes) {
   const [alertas, setAlertas] = useState<PostoId[]>([]);
   const [eventos, setEventos] = useState<Evento[]>([]);
   const [tratativa, setTratativa] = useState<PostoId | "todos" | null>(null);
+  const [negado, setNegado] = useState("");
   const [relogio, setRelogio] = useState("--:--:--");
   const montado = useRef(false);
+
+  // guarda sempre a versão mais recente das permissões
+  const permRef = useRef(perm);
+  permRef.current = perm;
 
   useEffect(() => {
     montado.current = true;
@@ -55,6 +57,11 @@ export function useOps() {
 
   const acionar = useCallback(
     (id: PostoId) => {
+      if (!permRef.current.podeAcionar(id)) {
+        setNegado(`Seu perfil não tem autorização para acionar o PDA do Posto ${id}.`);
+        return;
+      }
+      setNegado("");
       setAlertas((prev) => (prev.includes(id) ? prev : [...prev, id]));
       const p = POSTO_BY_ID[id];
       registrar(p.codigo, "PDA", "critico", `Acionamento manual — ${p.nome}`);
@@ -62,8 +69,22 @@ export function useOps() {
     [registrar],
   );
 
+  const abrirTratativa = useCallback((alvo: PostoId | "todos") => {
+    if (!permRef.current.podeTratar(alvo)) {
+      setNegado(
+        alvo === "todos"
+          ? "Somente o Administrador pode resetar a central."
+          : `Seu perfil não tem autorização para tratar o Posto ${alvo}.`,
+      );
+      return;
+    }
+    setNegado("");
+    setTratativa(alvo);
+  }, []);
+
   const concluirTratativa = useCallback(
     (id: PostoId, responsavel: string, motivo: string, detalhe: string) => {
+      if (!permRef.current.podeTratar(id)) return;
       setAlertas((prev) => prev.filter((a) => a !== id));
       const p = POSTO_BY_ID[id];
       registrar(
@@ -81,6 +102,7 @@ export function useOps() {
 
   const concluirLimpeza = useCallback(
     (responsavel: string, motivo: string, detalhe: string) => {
+      if (!permRef.current.podeTratar("todos")) return;
       setAlertas([]);
       registrar(
         "TODOS",
@@ -103,33 +125,14 @@ export function useOps() {
     [alertas],
   );
 
-  const csv = useMemo(() => {
-    const linhas = [CSV_FIELDS.join(",")];
-    for (const e of eventos) {
-      linhas.push(
-        CSV_FIELDS.map((f) => `"${String(e[f]).replace(/"/g, '""')}"`).join(","),
-      );
-    }
-    return linhas.join("\n");
-  }, [eventos]);
-
-  const exportar = useCallback(() => {
-    const blob = new Blob([`\uFEFF${csv}`], { type: "text/csv;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `auditoria-agsp-${Date.now()}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-  }, [csv]);
-
   const exportarPdf = useCallback(() => {
     gerarRelatorioPdf(eventos);
   }, [eventos]);
 
+  const postos = useMemo(() => POSTOS, []);
 
   return {
-    postos: POSTOS,
+    postos,
     alertas,
     nAlertas: alertas.length,
     emAlerta,
@@ -138,12 +141,13 @@ export function useOps() {
     relogio,
     tratativa,
     setTratativa,
+    abrirTratativa,
+    negado,
+    limparNegado: () => setNegado(""),
     acionar,
     concluirTratativa,
     concluirLimpeza,
-    exportar,
     exportarPdf,
-
   };
 }
 
