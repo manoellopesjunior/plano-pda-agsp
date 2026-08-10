@@ -279,18 +279,23 @@ function CentroOperacoes() {
                           {postoAtivo.lat.toFixed(5)} / {postoAtivo.lon.toFixed(5)}
                         </p>
                         <div className="mt-4 flex flex-wrap gap-2">
-                          {ops.emAlerta(postoAtivo.id) ? (
-                            <OpsButton
-                              variant="alert"
-                              onClick={() => abrirTratativa(postoAtivo.id)}
-                            >
-                              Tratar acionamento
-                            </OpsButton>
-                          ) : (
-                            <OpsButton variant="signal" onClick={() => ops.acionar(postoAtivo.id)}>
-                              Acionar PDA
-                            </OpsButton>
-                          )}
+                          {ops.emAlerta(postoAtivo.id)
+                            ? auth.podeTratar(postoAtivo.id) && (
+                                <OpsButton
+                                  variant="alert"
+                                  onClick={() => abrirTratativa(postoAtivo.id)}
+                                >
+                                  Tratar acionamento
+                                </OpsButton>
+                              )
+                            : auth.podeAcionar(postoAtivo.id) && (
+                                <OpsButton
+                                  variant="signal"
+                                  onClick={() => ops.acionar(postoAtivo.id)}
+                                >
+                                  Acionar PDA
+                                </OpsButton>
+                              )}
                           <OpsButton onClick={() => sirene.testar(postoAtivo.id)}>
                             Testar megafone
                           </OpsButton>
@@ -300,9 +305,10 @@ function CentroOperacoes() {
                     ) : (
                       <div className="border border-dashed border-line bg-panel-2 px-4 py-6 text-center">
                         <p className="label-mono normal-case">
-                          Selecione um pino no mapa para acionar ou tratar um posto
+                          Selecione um pino no mapa para consultar ou operar um posto
                         </p>
                       </div>
+
                     )}
                   </div>
                 </section>
@@ -420,7 +426,7 @@ function CentroOperacoes() {
                       "Acionamento — a linha é criada automaticamente quando um posto dispara o PDA (hora, posto, nível crítico).",
                       "Tratativa — ao desarmar, o operador informa responsável, motivo e detalhe; isso vira uma segunda linha ligada ao mesmo posto.",
                       "Reset da central — desarma todos os postos de uma vez e grava um registro com posto “TODOS”.",
-                      "Exportar relatório PDF — gera a parte de ocorrências do turno pronta para assinatura e arquivamento; o CSV continua disponível para planilha.",
+                      "Exportar relatório PDF — gera a parte de ocorrências do turno pronta para assinatura e arquivamento.",
                     ].map((t) => (
                       <li key={t} className="grid grid-cols-[auto_minmax(0,1fr)] gap-2">
                         <i aria-hidden className="mt-2 size-1.5 shrink-0 bg-signal" />
@@ -430,11 +436,13 @@ function CentroOperacoes() {
                   </ul>
                   <p className="label-mono mt-3 normal-case">
                     Os registros valem apenas para a sessão aberta no navegador — ao recarregar a
-                    página o histórico é zerado. Exporte o CSV antes de encerrar o turno.
+                    página o histórico é zerado. Gere o relatório PDF antes de encerrar o turno.
                   </p>
                 </div>
 
                 <AuditLog eventos={ops.eventos} />
+
+
 
               </section>
             )}
