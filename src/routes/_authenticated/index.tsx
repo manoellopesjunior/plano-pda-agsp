@@ -255,7 +255,6 @@ function CentroOperacoes() {
 
                 <section className="grid content-start gap-4">
                   <div>
-                    <SectionTitle>Quadro de postos</SectionTitle>
                     <MonitorBoard
                       titulo="Quadro de postos"
                       postos={TODOS}
@@ -263,6 +262,7 @@ function CentroOperacoes() {
                       emPrevencao={ops.emPrevencao}
                     />
                   </div>
+
 
 
                   <div>
