@@ -26,7 +26,7 @@ export function TacticalMap({
       <div className="relative aspect-[1485/1835] w-full">
         <img
           src={sat.url}
-          alt="Vista aérea do Arsenal de Guerra de São Paulo com os seis postos de sentinela"
+          alt="Vista aérea do Arsenal de Guerra de São Paulo com os seis postos de guarda"
           className="absolute inset-0 size-full object-cover brightness-[.82] saturate-[1.05] contrast-[1.05]"
           loading="eager"
         />

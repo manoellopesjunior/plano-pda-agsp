@@ -7,26 +7,40 @@ export type UsuarioAdmin = {
   nome: string;
   email: string;
   posto: string;
+  postoId: number | null;
   ativo: boolean;
   role: AppRole;
   criadoEm: string;
 };
 
-export type AppRole = "admin" | "oficial" | "sentinela";
+export type AppRole = "admin" | "oficial" | "comum";
 
 export const ROLE_LABEL: Record<AppRole, string> = {
   admin: "Administrador",
-  oficial: "Oficial de Dia",
-  sentinela: "Sentinela",
+  oficial: "Posto / Oficial de Dia",
+  comum: "Usuário comum (somente visualização)",
 };
 
-export const roleSchema = z.enum(["admin", "oficial", "sentinela"]);
+export const roleSchema = z.enum(["admin", "oficial", "comum"]);
+
+const postoIdSchema = z
+  .union([z.number().int().min(1).max(6), z.null()])
+  .default(null);
 
 export const criarSchema = z.object({
-  nome: z.string().trim().min(2, "Informe o nome").max(120),
+  nome: z.string().trim().min(2, "Informe o nome completo").max(120),
   email: z.string().trim().email("E-mail inválido").max(255),
   senha: z.string().min(8, "Mínimo de 8 caracteres").max(128),
   posto: z.string().trim().max(120).default(""),
+  postoId: postoIdSchema,
+  role: roleSchema,
+});
+
+export const editarSchema = z.object({
+  userId: z.string().uuid(),
+  nome: z.string().trim().min(2, "Informe o nome completo").max(120),
+  posto: z.string().trim().max(120).default(""),
+  postoId: postoIdSchema,
   role: roleSchema,
 });
 

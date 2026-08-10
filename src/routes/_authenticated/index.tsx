@@ -11,7 +11,7 @@ import { Chip, OpsButton, SectionTitle, StatusMsg } from "@/components/ops/primi
 import { useAuth } from "@/hooks/useAuth";
 import { useOps } from "@/hooks/useOps";
 import { useSirene } from "@/hooks/useSirene";
-import { GUARDA1_POSTOS, POSTOS, TELAS, type PostoId, type Tela } from "@/lib/agsp";
+import { POSTOS, TELAS, type PostoId, type Tela } from "@/lib/agsp";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/")({
@@ -21,13 +21,13 @@ export const Route = createFileRoute("/_authenticated/")({
       {
         name: "description",
         content:
-          "Painel operacional do Arsenal de Guerra de São Paulo: mapa tático dos seis postos, quadros de sirene da CT e da Guarda 1, câmeras e auditoria de acionamentos.",
+          "Painel operacional do Arsenal de Guerra de São Paulo: mapa tático dos seis postos, quadro de postos, câmeras e auditoria de acionamentos do PDA.",
       },
       { property: "og:title", content: "AGSP — Centro de Operações da Guarda | PMAC" },
       {
         property: "og:description",
         content:
-          "Painel operacional do Arsenal de Guerra de São Paulo: mapa tático dos seis postos, quadros de sirene da CT e da Guarda 1, câmeras e auditoria de acionamentos.",
+          "Painel operacional do Arsenal de Guerra de São Paulo: mapa tático dos seis postos, quadro de postos, câmeras e auditoria de acionamentos do PDA.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -40,7 +40,7 @@ const TODOS: PostoId[] = ["1", "2", "3", "4", "5", "6"];
 
 function CentroOperacoes() {
   const auth = useAuth();
-  const ops = useOps();
+  const ops = useOps({ podeAcionar: auth.podeAcionar, podeTratar: auth.podeTratar });
   const sirene = useSirene(ops.alertas);
   const [tela, setTela] = useState<Tela>("Visão Geral");
   const [selecionado, setSelecionado] = useState<PostoId | null>(null);
@@ -50,7 +50,7 @@ function CentroOperacoes() {
     [selecionado],
   );
 
-  const abrirTratativa = (alvo: PostoId | "todos") => ops.setTratativa(alvo);
+  const abrirTratativa = (alvo: PostoId | "todos") => ops.abrirTratativa(alvo);
 
   return (
     <div className="min-h-screen bg-background">
@@ -170,7 +170,7 @@ function CentroOperacoes() {
             <StatusMsg kind={ops.nAlertas ? "alert" : "ok"}>
               {ops.nAlertas
                 ? `${ops.nAlertas} posto(s) com acionamento de PDA pendente de tratativa — megafone anunciando "PDA POSTO ${ops.alertas.join(" / ")}"`
-                : "Todos os seis postos de sentinela operando dentro da normalidade"}
+                : "Todos os seis postos operando dentro da normalidade"}
             </StatusMsg>
             <div className="flex flex-wrap gap-2">
               <OpsButton
@@ -181,13 +181,15 @@ function CentroOperacoes() {
                 {sirene.somAtivo ? "Megafone: ligado" : "Megafone: mudo"}
               </OpsButton>
               <InstallButton />
-              <OpsButton
-                variant="alert"
-                disabled={!ops.nAlertas}
-                onClick={() => abrirTratativa("todos")}
-              >
-                Resetar central
-              </OpsButton>
+              {auth.isAdmin && (
+                <OpsButton
+                  variant="alert"
+                  disabled={!ops.nAlertas}
+                  onClick={() => abrirTratativa("todos")}
+                >
+                  Resetar central
+                </OpsButton>
+              )}
               <OpsButton
                 variant="signal"
                 disabled={!ops.eventos.length}
@@ -195,12 +197,24 @@ function CentroOperacoes() {
               >
                 Exportar relatório PDF
               </OpsButton>
-              <OpsButton disabled={!ops.eventos.length} onClick={ops.exportar}>
-                Exportar CSV
-              </OpsButton>
-
             </div>
           </div>
+
+          {!auth.podeOperar && auth.role !== null && (
+            <div className="mt-3">
+              <StatusMsg kind="ok">
+                Perfil de consulta: você acompanha mapa, postos, câmeras, quadro e auditoria, sem
+                permissão para acionar ou tratar PDA.
+              </StatusMsg>
+            </div>
+          )}
+
+          {ops.negado && (
+            <div className="mt-3">
+              <StatusMsg kind="alert">{ops.negado}</StatusMsg>
+            </div>
+          )}
+
 
 
           {ops.tratativa && (
@@ -241,24 +255,15 @@ function CentroOperacoes() {
 
                 <section className="grid content-start gap-4">
                   <div>
-                    <SectionTitle>Quadros de sirene</SectionTitle>
-                    <div className="grid gap-3">
-                      <MonitorBoard
-                        titulo="CT — Quadro de monitoramento"
-                        variante="ct"
-                        postos={TODOS}
-                        emAlerta={ops.emAlerta}
-                        emPrevencao={ops.emPrevencao}
-                      />
-                      <MonitorBoard
-                        titulo="Guarda 1 — Quadro de monitoramento"
-                        variante="guarda"
-                        postos={GUARDA1_POSTOS}
-                        emAlerta={ops.emAlerta}
-                        emPrevencao={ops.emPrevencao}
-                      />
-                    </div>
+                    <MonitorBoard
+                      titulo="Quadro de postos"
+                      postos={TODOS}
+                      emAlerta={ops.emAlerta}
+                      emPrevencao={ops.emPrevencao}
+                    />
                   </div>
+
+
 
                   <div>
                     <SectionTitle>
@@ -274,18 +279,23 @@ function CentroOperacoes() {
                           {postoAtivo.lat.toFixed(5)} / {postoAtivo.lon.toFixed(5)}
                         </p>
                         <div className="mt-4 flex flex-wrap gap-2">
-                          {ops.emAlerta(postoAtivo.id) ? (
-                            <OpsButton
-                              variant="alert"
-                              onClick={() => abrirTratativa(postoAtivo.id)}
-                            >
-                              Tratar acionamento
-                            </OpsButton>
-                          ) : (
-                            <OpsButton variant="signal" onClick={() => ops.acionar(postoAtivo.id)}>
-                              Acionar PDA
-                            </OpsButton>
-                          )}
+                          {ops.emAlerta(postoAtivo.id)
+                            ? auth.podeTratar(postoAtivo.id) && (
+                                <OpsButton
+                                  variant="alert"
+                                  onClick={() => abrirTratativa(postoAtivo.id)}
+                                >
+                                  Tratar acionamento
+                                </OpsButton>
+                              )
+                            : auth.podeAcionar(postoAtivo.id) && (
+                                <OpsButton
+                                  variant="signal"
+                                  onClick={() => ops.acionar(postoAtivo.id)}
+                                >
+                                  Acionar PDA
+                                </OpsButton>
+                              )}
                           <OpsButton onClick={() => sirene.testar(postoAtivo.id)}>
                             Testar megafone
                           </OpsButton>
@@ -295,9 +305,10 @@ function CentroOperacoes() {
                     ) : (
                       <div className="border border-dashed border-line bg-panel-2 px-4 py-6 text-center">
                         <p className="label-mono normal-case">
-                          Selecione um pino no mapa para acionar ou tratar um posto
+                          Selecione um pino no mapa para consultar ou operar um posto
                         </p>
                       </div>
+
                     )}
                   </div>
                 </section>
@@ -334,16 +345,8 @@ function CentroOperacoes() {
               <section className="grid gap-4 lg:grid-cols-2">
                 <div className="grid content-start gap-3">
                   <MonitorBoard
-                    titulo="CT — Quadro de monitoramento"
-                    variante="ct"
+                    titulo="Quadro de postos"
                     postos={TODOS}
-                    emAlerta={ops.emAlerta}
-                    emPrevencao={ops.emPrevencao}
-                  />
-                  <MonitorBoard
-                    titulo="Guarda 1 — Quadro de monitoramento"
-                    variante="guarda"
-                    postos={GUARDA1_POSTOS}
                     emAlerta={ops.emAlerta}
                     emPrevencao={ops.emPrevencao}
                   />
@@ -353,6 +356,7 @@ function CentroOperacoes() {
                   <ul className="grid gap-px border border-line bg-line">
                     {POSTOS.map((p) => {
                       const on = ops.emAlerta(p.id);
+                      const podeAgir = on ? auth.podeTratar(p.id) : auth.podeAcionar(p.id);
                       return (
                         <li
                           key={p.id}
@@ -367,22 +371,26 @@ function CentroOperacoes() {
                             </p>
                             <p className="label-mono truncate normal-case">{p.desc}</p>
                           </div>
-                          {on ? (
-                            <OpsButton
-                              variant="alert"
-                              className="shrink-0"
-                              onClick={() => abrirTratativa(p.id)}
-                            >
-                              Tratar
-                            </OpsButton>
+                          {podeAgir ? (
+                            on ? (
+                              <OpsButton
+                                variant="alert"
+                                className="shrink-0"
+                                onClick={() => abrirTratativa(p.id)}
+                              >
+                                Tratar
+                              </OpsButton>
+                            ) : (
+                              <OpsButton
+                                variant="signal"
+                                className="shrink-0"
+                                onClick={() => ops.acionar(p.id)}
+                              >
+                                Acionar
+                              </OpsButton>
+                            )
                           ) : (
-                            <OpsButton
-                              variant="signal"
-                              className="shrink-0"
-                              onClick={() => ops.acionar(p.id)}
-                            >
-                              Acionar
-                            </OpsButton>
+                            <span className="label-mono shrink-0">Somente leitura</span>
                           )}
                         </li>
                       );
@@ -391,6 +399,7 @@ function CentroOperacoes() {
                 </div>
               </section>
             )}
+
 
             {tela === "Auditoria" && (
               <section>
@@ -417,7 +426,7 @@ function CentroOperacoes() {
                       "Acionamento — a linha é criada automaticamente quando um posto dispara o PDA (hora, posto, nível crítico).",
                       "Tratativa — ao desarmar, o operador informa responsável, motivo e detalhe; isso vira uma segunda linha ligada ao mesmo posto.",
                       "Reset da central — desarma todos os postos de uma vez e grava um registro com posto “TODOS”.",
-                      "Exportar relatório PDF — gera a parte de ocorrências do turno pronta para assinatura e arquivamento; o CSV continua disponível para planilha.",
+                      "Exportar relatório PDF — gera a parte de ocorrências do turno pronta para assinatura e arquivamento.",
                     ].map((t) => (
                       <li key={t} className="grid grid-cols-[auto_minmax(0,1fr)] gap-2">
                         <i aria-hidden className="mt-2 size-1.5 shrink-0 bg-signal" />
@@ -427,11 +436,13 @@ function CentroOperacoes() {
                   </ul>
                   <p className="label-mono mt-3 normal-case">
                     Os registros valem apenas para a sessão aberta no navegador — ao recarregar a
-                    página o histórico é zerado. Exporte o CSV antes de encerrar o turno.
+                    página o histórico é zerado. Gere o relatório PDF antes de encerrar o turno.
                   </p>
                 </div>
 
                 <AuditLog eventos={ops.eventos} />
+
+
 
               </section>
             )}

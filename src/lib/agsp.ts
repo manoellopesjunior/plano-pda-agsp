@@ -84,9 +84,6 @@ export const POSTO_BY_ID = Object.fromEntries(POSTOS.map((p) => [p.id, p])) as R
 export const CT = { x: 46.2, y: 46.7 };
 
 
-/** Postos cobertos pelo quadro da Guarda 1 */
-export const GUARDA1_POSTOS: PostoId[] = ["1", "2", "3", "4", "5", "6"];
-
 export const MOTIVOS = [
   "Falso positivo / teste",
   "Situação controlada no local",
@@ -108,16 +105,6 @@ export interface Evento {
   responsavel: string;
   motivo: string;
 }
-
-export const CSV_FIELDS = [
-  "hora",
-  "posto",
-  "categoria",
-  "nivel",
-  "mensagem",
-  "responsavel",
-  "motivo",
-] as const;
 
 export const TELAS = ["Visão Geral", "Mapa", "Câmeras", "Quadros", "Auditoria"] as const;
 export type Tela = (typeof TELAS)[number];

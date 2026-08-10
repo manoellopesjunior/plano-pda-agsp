@@ -5,6 +5,7 @@ import {
   BAN_FOREVER,
   ativoSchema,
   criarSchema,
+  editarSchema,
   exigirAdmin,
   idSchema,
   senhaSchema,
@@ -20,7 +21,7 @@ export const listarUsuarios = createServerFn({ method: "GET" })
     const [{ data: perfis, error: e1 }, { data: funcoes, error: e2 }] = await Promise.all([
       supabaseAdmin
         .from("profiles")
-        .select("id, nome, email, posto, ativo, created_at")
+        .select("id, nome, email, posto, posto_id, ativo, created_at")
         .order("created_at", { ascending: true }),
       supabaseAdmin.from("user_roles").select("user_id, role"),
     ]);
@@ -33,8 +34,9 @@ export const listarUsuarios = createServerFn({ method: "GET" })
       nome: p.nome,
       email: p.email,
       posto: p.posto,
+      postoId: p.posto_id ?? null,
       ativo: p.ativo,
-      role: (mapa.get(p.id) ?? "sentinela") as UsuarioAdmin["role"],
+      role: (mapa.get(p.id) ?? "comum") as UsuarioAdmin["role"],
       criadoEm: p.created_at,
     }));
   });
@@ -46,6 +48,8 @@ export const criarUsuario = createServerFn({ method: "POST" })
     await exigirAdmin(context as never);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
+    const postoId = data.role === "oficial" ? data.postoId : null;
+
     const { data: criado, error } = await supabaseAdmin.auth.admin.createUser({
       email: data.email,
       password: data.senha,
@@ -56,11 +60,40 @@ export const criarUsuario = createServerFn({ method: "POST" })
 
     await supabaseAdmin
       .from("profiles")
-      .update({ nome: data.nome, email: data.email, posto: data.posto })
+      .update({ nome: data.nome, email: data.email, posto: data.posto, posto_id: postoId })
       .eq("id", criado.user.id);
     await supabaseAdmin
       .from("user_roles")
       .upsert({ user_id: criado.user.id, role: data.role }, { onConflict: "user_id,role" });
+
+    return { ok: true };
+  });
+
+export const editarUsuario = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => editarSchema.parse(input))
+  .handler(async ({ data, context }) => {
+    await exigirAdmin(context as never);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const postoId = data.role === "oficial" ? data.postoId : null;
+
+    const { error } = await supabaseAdmin
+      .from("profiles")
+      .update({ nome: data.nome, posto: data.posto, posto_id: postoId })
+      .eq("id", data.userId);
+    if (error) throw new Error(error.message);
+
+    const { error: e2 } = await supabaseAdmin
+      .from("user_roles")
+      .delete()
+      .eq("user_id", data.userId);
+    if (e2) throw new Error(e2.message);
+
+    const { error: e3 } = await supabaseAdmin
+      .from("user_roles")
+      .insert({ user_id: data.userId, role: data.role });
+    if (e3) throw new Error(e3.message);
 
     return { ok: true };
   });
