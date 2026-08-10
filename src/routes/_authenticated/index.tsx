@@ -11,7 +11,7 @@ import { Chip, OpsButton, SectionTitle, StatusMsg } from "@/components/ops/primi
 import { useAuth } from "@/hooks/useAuth";
 import { useOps } from "@/hooks/useOps";
 import { useSirene } from "@/hooks/useSirene";
-import { GUARDA1_POSTOS, POSTOS, TELAS, type PostoId, type Tela } from "@/lib/agsp";
+import { POSTOS, TELAS, type PostoId, type Tela } from "@/lib/agsp";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/")({
@@ -21,13 +21,13 @@ export const Route = createFileRoute("/_authenticated/")({
       {
         name: "description",
         content:
-          "Painel operacional do Arsenal de Guerra de São Paulo: mapa tático dos seis postos, quadros de sirene da CT e da Guarda 1, câmeras e auditoria de acionamentos.",
+          "Painel operacional do Arsenal de Guerra de São Paulo: mapa tático dos seis postos, quadro de postos, câmeras e auditoria de acionamentos do PDA.",
       },
       { property: "og:title", content: "AGSP — Centro de Operações da Guarda | PMAC" },
       {
         property: "og:description",
         content:
-          "Painel operacional do Arsenal de Guerra de São Paulo: mapa tático dos seis postos, quadros de sirene da CT e da Guarda 1, câmeras e auditoria de acionamentos.",
+          "Painel operacional do Arsenal de Guerra de São Paulo: mapa tático dos seis postos, quadro de postos, câmeras e auditoria de acionamentos do PDA.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -40,7 +40,7 @@ const TODOS: PostoId[] = ["1", "2", "3", "4", "5", "6"];
 
 function CentroOperacoes() {
   const auth = useAuth();
-  const ops = useOps();
+  const ops = useOps({ podeAcionar: auth.podeAcionar, podeTratar: auth.podeTratar });
   const sirene = useSirene(ops.alertas);
   const [tela, setTela] = useState<Tela>("Visão Geral");
   const [selecionado, setSelecionado] = useState<PostoId | null>(null);
@@ -50,7 +50,7 @@ function CentroOperacoes() {
     [selecionado],
   );
 
-  const abrirTratativa = (alvo: PostoId | "todos") => ops.setTratativa(alvo);
+  const abrirTratativa = (alvo: PostoId | "todos") => ops.abrirTratativa(alvo);
 
   return (
     <div className="min-h-screen bg-background">
