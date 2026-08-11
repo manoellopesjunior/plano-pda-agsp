@@ -14,6 +14,63 @@ export type Database = {
   }
   public: {
     Tables: {
+      pda_alertas: {
+        Row: {
+          acionado_por: string | null
+          acionado_por_nome: string
+          created_at: string
+          posto: string
+        }
+        Insert: {
+          acionado_por?: string | null
+          acionado_por_nome?: string
+          created_at?: string
+          posto: string
+        }
+        Update: {
+          acionado_por?: string | null
+          acionado_por_nome?: string
+          created_at?: string
+          posto?: string
+        }
+        Relationships: []
+      }
+      pda_eventos: {
+        Row: {
+          autor_id: string | null
+          categoria: string
+          created_at: string
+          id: string
+          mensagem: string
+          motivo: string
+          nivel: string
+          posto: string
+          responsavel: string
+        }
+        Insert: {
+          autor_id?: string | null
+          categoria: string
+          created_at?: string
+          id?: string
+          mensagem?: string
+          motivo?: string
+          nivel?: string
+          posto: string
+          responsavel?: string
+        }
+        Update: {
+          autor_id?: string | null
+          categoria?: string
+          created_at?: string
+          id?: string
+          mensagem?: string
+          motivo?: string
+          nivel?: string
+          posto?: string
+          responsavel?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           ativo: boolean
