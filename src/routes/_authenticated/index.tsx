@@ -40,7 +40,11 @@ const TODOS: PostoId[] = ["1", "2", "3", "4", "5", "6"];
 
 function CentroOperacoes() {
   const auth = useAuth();
-  const ops = useOps({ podeAcionar: auth.podeAcionar, podeTratar: auth.podeTratar });
+  const ops = useOps(
+    { podeAcionar: auth.podeAcionar, podeTratar: auth.podeTratar },
+    { id: auth.user?.id ?? null, nome: auth.perfil?.nome || auth.perfil?.email || "—" },
+  );
+
   const sirene = useSirene(ops.alertas);
   const [tela, setTela] = useState<Tela>("Visão Geral");
   const [selecionado, setSelecionado] = useState<PostoId | null>(null);
