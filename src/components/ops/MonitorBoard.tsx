@@ -7,9 +7,16 @@ interface Props {
   postos: PostoId[];
   emAlerta: (id: PostoId) => boolean;
   emPrevencao: (id: PostoId) => boolean;
+  destaque?: boolean;
 }
 
-export function MonitorBoard({ titulo = "Quadro de postos", postos, emAlerta, emPrevencao }: Props) {
+export function MonitorBoard({
+  titulo = "Quadro de postos",
+  postos,
+  emAlerta,
+  emPrevencao,
+  destaque = false,
+}: Props) {
   const ativos = postos.filter(emAlerta).length;
 
   return (
