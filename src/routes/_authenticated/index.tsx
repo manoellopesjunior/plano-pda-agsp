@@ -247,10 +247,6 @@ function CentroOperacoes() {
                     relogio={ops.relogio}
                     nAlertas={ops.nAlertas}
                   />
-                  <div className="mt-3">
-                    <p className="label-mono mb-2">Miniaturas de câmera</p>
-                    <MiniCams postos={POSTOS} emAlerta={ops.emAlerta} />
-                  </div>
                 </section>
 
                 <section className="grid content-start gap-4">
@@ -262,6 +258,12 @@ function CentroOperacoes() {
                       emPrevencao={ops.emPrevencao}
                     />
                   </div>
+
+                  <div>
+                    <p className="label-mono mb-2">Miniaturas de câmera</p>
+                    <MiniCams postos={POSTOS} emAlerta={ops.emAlerta} />
+                  </div>
+
 
 
 
