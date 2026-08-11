@@ -247,10 +247,6 @@ function CentroOperacoes() {
                     relogio={ops.relogio}
                     nAlertas={ops.nAlertas}
                   />
-                  <div className="mt-3">
-                    <p className="label-mono mb-2">Miniaturas de câmera</p>
-                    <MiniCams postos={POSTOS} emAlerta={ops.emAlerta} />
-                  </div>
                 </section>
 
                 <section className="grid content-start gap-4">
@@ -262,6 +258,12 @@ function CentroOperacoes() {
                       emPrevencao={ops.emPrevencao}
                     />
                   </div>
+
+                  <div>
+                    <p className="label-mono mb-2">Miniaturas de câmera</p>
+                    <MiniCams postos={POSTOS} emAlerta={ops.emAlerta} />
+                  </div>
+
 
 
 
@@ -296,9 +298,11 @@ function CentroOperacoes() {
                                   Acionar PDA
                                 </OpsButton>
                               )}
-                          <OpsButton onClick={() => sirene.testar(postoAtivo.id)}>
-                            Testar megafone
-                          </OpsButton>
+                          {auth.podeOperar && (
+                            <OpsButton onClick={() => sirene.testar(postoAtivo.id)}>
+                              Testar megafone
+                            </OpsButton>
+                          )}
                           <OpsButton onClick={() => setSelecionado(null)}>Fechar</OpsButton>
                         </div>
                       </div>
@@ -342,15 +346,22 @@ function CentroOperacoes() {
             )}
 
             {tela === "Quadros" && (
-              <section className="grid gap-4 lg:grid-cols-2">
+              <section
+                className={cn(
+                  "grid gap-4",
+                  auth.podeOperar ? "lg:grid-cols-2" : "mx-auto w-full max-w-3xl",
+                )}
+              >
                 <div className="grid content-start gap-3">
                   <MonitorBoard
                     titulo="Quadro de postos"
                     postos={TODOS}
                     emAlerta={ops.emAlerta}
                     emPrevencao={ops.emPrevencao}
+                    destaque
                   />
                 </div>
+                {auth.podeOperar && (
                 <div>
                   <SectionTitle>Situação operacional</SectionTitle>
                   <ul className="grid gap-px border border-line bg-line">
@@ -397,6 +408,7 @@ function CentroOperacoes() {
                     })}
                   </ul>
                 </div>
+                )}
               </section>
             )}
 
