@@ -346,15 +346,22 @@ function CentroOperacoes() {
             )}
 
             {tela === "Quadros" && (
-              <section className="grid gap-4 lg:grid-cols-2">
+              <section
+                className={cn(
+                  "grid gap-4",
+                  auth.podeOperar ? "lg:grid-cols-2" : "mx-auto w-full max-w-3xl",
+                )}
+              >
                 <div className="grid content-start gap-3">
                   <MonitorBoard
                     titulo="Quadro de postos"
                     postos={TODOS}
                     emAlerta={ops.emAlerta}
                     emPrevencao={ops.emPrevencao}
+                    destaque
                   />
                 </div>
+                {auth.podeOperar && (
                 <div>
                   <SectionTitle>Situação operacional</SectionTitle>
                   <ul className="grid gap-px border border-line bg-line">
