@@ -5,6 +5,7 @@ import { OpsButton } from "@/components/ops/primitives";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/auth")({
+  ssr: false,
   head: () => ({
     meta: [
       { title: "Acesso restrito — AGSP | PMAC" },
