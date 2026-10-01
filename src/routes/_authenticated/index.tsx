@@ -2,7 +2,6 @@ import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { AuditLog } from "@/components/ops/AuditLog";
-import { CameraGrid, MiniCams } from "@/components/ops/CameraGrid";
 import { MonitorBoard } from "@/components/ops/MonitorBoard";
 import { TacticalMap } from "@/components/ops/TacticalMap";
 import { TratativaForm } from "@/components/ops/TratativaForm";
@@ -21,13 +20,13 @@ export const Route = createFileRoute("/_authenticated/")({
       {
         name: "description",
         content:
-          "Painel operacional do Arsenal de Guerra de São Paulo: mapa tático dos seis postos, quadro de postos, câmeras e auditoria de acionamentos do PDA.",
+          "Painel operacional do Arsenal de Guerra de São Paulo: visão geral, mapa tático dos seis postos, quadro e auditoria de acionamentos do PDA.",
       },
       { property: "og:title", content: "AGSP — Centro de Operações da Guarda | PMAC" },
       {
         property: "og:description",
         content:
-          "Painel operacional do Arsenal de Guerra de São Paulo: mapa tático dos seis postos, quadro de postos, câmeras e auditoria de acionamentos do PDA.",
+          "Painel operacional do Arsenal de Guerra de São Paulo: visão geral, mapa tático dos seis postos, quadro e auditoria de acionamentos do PDA.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -107,7 +106,7 @@ function CentroOperacoes() {
           {/* Navegação */}
           <nav
             aria-label="Telas do centro de operações"
-            className="mt-3 grid grid-cols-2 gap-px border border-line bg-line sm:grid-cols-5"
+            className="mt-3 grid grid-cols-2 gap-px border border-line bg-line sm:grid-cols-4"
           >
             {TELAS.map((t) => (
               <button
@@ -207,7 +206,7 @@ function CentroOperacoes() {
           {!auth.podeOperar && auth.role !== null && (
             <div className="mt-3">
               <StatusMsg kind="ok">
-                Perfil de consulta: você acompanha mapa, postos, câmeras, quadro e auditoria, sem
+                Perfil de consulta: você acompanha mapa, postos, quadro e auditoria, sem
                 permissão para acionar ou tratar PDA.
               </StatusMsg>
             </div>
@@ -263,13 +262,6 @@ function CentroOperacoes() {
                     />
                   </div>
 
-                  <div>
-                    <p className="label-mono mb-2">Miniaturas de câmera</p>
-                    <MiniCams postos={POSTOS} emAlerta={ops.emAlerta} />
-                  </div>
-
-
-
 
                   <div>
                     <SectionTitle>
@@ -278,9 +270,8 @@ function CentroOperacoes() {
                     {postoAtivo ? (
                       <div className="border border-line bg-panel-2 p-4">
                         <p className="font-display text-lead font-bold tracking-[0.1em] uppercase text-foreground">
-                          {postoAtivo.nome}
+                          Posto {postoAtivo.id}
                         </p>
-                        <p className="mt-1 text-base2 text-muted-foreground">{postoAtivo.desc}</p>
                         <p className="label-mono mt-2">
                           {postoAtivo.lat.toFixed(5)} / {postoAtivo.lon.toFixed(5)}
                         </p>
@@ -340,15 +331,6 @@ function CentroOperacoes() {
               </section>
             )}
 
-            {tela === "Câmeras" && (
-              <section>
-                <SectionTitle right={<Chip tone="ok">6 canais</Chip>}>
-                  Circuito de câmeras
-                </SectionTitle>
-                <CameraGrid postos={POSTOS} emAlerta={ops.emAlerta} destaque={selecionado} />
-              </section>
-            )}
-
             {tela === "Quadros" && (
               <section
                 className={cn(
@@ -382,9 +364,8 @@ function CentroOperacoes() {
                         >
                           <div className="min-w-0">
                             <p className="truncate font-display text-base2 font-bold tracking-[0.1em] uppercase text-foreground">
-                              {p.codigo} · {p.nome}
+                              Posto {p.id}
                             </p>
-                            <p className="label-mono truncate normal-case">{p.desc}</p>
                           </div>
                           {podeAgir ? (
                             on ? (
