@@ -1,3 +1,6 @@
+import { useEffect, useRef, useState } from "react";
+import { Maximize2, Minimize2 } from "lucide-react";
+
 import sat from "@/assets/agsp-satelite-v2.jpg.asset.json";
 import { CT, type Posto, type PostoId } from "@/lib/agsp";
 import { cn } from "@/lib/utils";
@@ -21,9 +24,41 @@ export function TacticalMap({
   relogio,
   nAlertas,
 }: Props) {
+  const mapRef = useRef<HTMLElement>(null);
+  const [emTelaCheia, setEmTelaCheia] = useState(false);
+
+  useEffect(() => {
+    const atualizarEstado = () => setEmTelaCheia(document.fullscreenElement === mapRef.current);
+    document.addEventListener("fullscreenchange", atualizarEstado);
+    return () => document.removeEventListener("fullscreenchange", atualizarEstado);
+  }, []);
+
+  const alternarTelaCheia = async () => {
+    const mapa = mapRef.current;
+    if (!mapa) return;
+
+    if (document.fullscreenElement === mapa) {
+      await document.exitFullscreen();
+      return;
+    }
+
+    await mapa.requestFullscreen();
+  };
+
   return (
-    <figure className="relative w-full overflow-hidden border border-signal/35 bg-[#02060c] shadow-[0_0_0_4px_var(--panel-2),0_24px_60px_-20px_rgba(0,0,0,.8)]">
-      <div className="relative aspect-[1485/1835] w-full">
+    <figure
+      ref={mapRef}
+      className={cn(
+        "relative w-full overflow-hidden border border-signal/35 bg-background shadow-[0_0_0_4px_var(--panel-2),0_24px_60px_-20px_rgba(0,0,0,.8)]",
+        emTelaCheia && "flex h-screen items-center justify-center border-0",
+      )}
+    >
+      <div
+        className={cn(
+          "relative aspect-[1485/1835] w-full",
+          emTelaCheia && "h-screen w-auto max-w-full",
+        )}
+      >
         <img
           src={sat.url}
           alt="Vista aérea do Arsenal de Guerra de São Paulo com os seis postos de guarda"
@@ -45,6 +80,16 @@ export function TacticalMap({
         <div aria-hidden className="pointer-events-none absolute inset-0 z-[3] overflow-hidden">
           <div className="scanline h-[14%] w-full bg-[linear-gradient(180deg,transparent,rgba(122,236,255,.035),transparent)]" />
         </div>
+
+        <button
+          type="button"
+          onClick={() => void alternarTelaCheia()}
+          aria-label={emTelaCheia ? "Sair da tela cheia do mapa" : "Ver mapa em tela cheia"}
+          title={emTelaCheia ? "Sair da tela cheia" : "Tela cheia"}
+          className="absolute top-16 right-3 z-20 grid size-10 place-items-center border border-signal/60 bg-panel-2/90 text-signal-soft transition-colors hover:bg-signal/20"
+        >
+          {emTelaCheia ? <Minimize2 className="size-5" /> : <Maximize2 className="size-5" />}
+        </button>
 
         {/* cantos de mira */}
         {(["tl", "tr", "bl", "br"] as const).map((c) => (

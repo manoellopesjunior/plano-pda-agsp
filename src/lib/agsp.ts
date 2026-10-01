@@ -4,7 +4,6 @@ export interface Posto {
   id: PostoId;
   codigo: string;
   nome: string;
-  desc: string;
   lat: number;
   lon: number;
   /** posição do pino sobre a imagem de satélite, em % */
@@ -16,8 +15,7 @@ export const POSTOS: Posto[] = [
   {
     id: "1",
     codigo: "P-01",
-    nome: "Guarita principal",
-    desc: "Acesso frontal — triagem de pessoal e veículos.",
+    nome: "Posto 1",
     lat: -23.51435,
     lon: -46.86842,
     x: 33.6,
@@ -26,8 +24,7 @@ export const POSTOS: Posto[] = [
   {
     id: "2",
     codigo: "P-02",
-    nome: "Flanco direito",
-    desc: "Perímetro leste — observação de divisa.",
+    nome: "Posto 2",
     lat: -23.51266,
     lon: -46.86674,
     x: 65.4,
@@ -36,8 +33,7 @@ export const POSTOS: Posto[] = [
   {
     id: "3",
     codigo: "P-03",
-    nome: "Área controlada",
-    desc: "Zona restrita / paiol — segurança máxima.",
+    nome: "Posto 3",
     lat: -23.51154,
     lon: -46.86693,
     x: 70.1,
@@ -46,8 +42,7 @@ export const POSTOS: Posto[] = [
   {
     id: "4",
     codigo: "P-04",
-    nome: "Muro posterior",
-    desc: "Perímetro norte — via e divisa sensível.",
+    nome: "Posto 4",
     lat: -23.51041,
     lon: -46.86644,
     x: 69.8,
@@ -56,8 +51,7 @@ export const POSTOS: Posto[] = [
   {
     id: "5",
     codigo: "P-05",
-    nome: "Centro de comando",
-    desc: "Flanco noroeste — comunicações.",
+    nome: "Posto 5",
     lat: -23.51053,
     lon: -46.8699,
     x: 29.8,
@@ -66,8 +60,7 @@ export const POSTOS: Posto[] = [
   {
     id: "6",
     codigo: "P-06",
-    nome: "Pátio operacional",
-    desc: "Flanco oeste — viaturas e apoio.",
+    nome: "Posto 6",
     lat: -23.51244,
     lon: -46.8697,
     x: 33.9,
@@ -106,5 +99,5 @@ export interface Evento {
   motivo: string;
 }
 
-export const TELAS = ["Visão Geral", "Mapa", "Câmeras", "Quadros", "Auditoria"] as const;
+export const TELAS = ["Visão Geral", "Mapa", "Quadros", "Auditoria"] as const;
 export type Tela = (typeof TELAS)[number];
