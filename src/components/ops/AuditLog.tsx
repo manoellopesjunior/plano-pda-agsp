@@ -17,7 +17,7 @@ export function AuditLog({ eventos }: { eventos: Evento[] }) {
   if (!eventos.length) {
     return (
       <div className="border border-dashed border-line bg-panel-2 px-4 py-10 text-center">
-        <p className="label-mono">Nenhum evento registrado nesta sessão</p>
+        <p className="label-mono">Nenhum evento registrado neste período</p>
       </div>
     );
   }
