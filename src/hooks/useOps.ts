@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { POSTO_BY_ID, POSTOS, type Evento, type Nivel, type PostoId } from "@/lib/agsp";
 import { gerarRelatorioPdf } from "@/lib/relatorio";
+import { inicioTurnoAtual } from "@/lib/turno";
 import { supabase } from "@/integrations/supabase/client";
 
 export type OpsPermissoes = {
@@ -77,14 +78,29 @@ export function useOps(perm: OpsPermissoes, autor?: OpsAutor) {
     setAlertas((data ?? []).map((r) => r.posto as PostoId));
   }, []);
 
+  // Trilha do turno: registros desde as 10h00 (São Paulo) — persiste a recargas.
   const carregarEventos = useCallback(async () => {
     const { data } = await supabase
       .from("pda_eventos")
       .select("id, posto, categoria, nivel, mensagem, responsavel, motivo, created_at")
+      .gte("created_at", inicioTurnoAtual().toISOString())
       .order("created_at", { ascending: false })
-      .limit(200);
+      .limit(500);
     setEventos((data ?? []).map((l) => paraEvento(l as LinhaEvento)));
   }, []);
+
+  // Vira o turno automaticamente às 10h00 sem precisar recarregar.
+  useEffect(() => {
+    let turno = inicioTurnoAtual().getTime();
+    const t = setInterval(() => {
+      const novo = inicioTurnoAtual().getTime();
+      if (novo !== turno) {
+        turno = novo;
+        void carregarEventos();
+      }
+    }, 30_000);
+    return () => clearInterval(t);
+  }, [carregarEventos]);
 
   // Carga inicial + sincronização em tempo real entre todos os dispositivos.
   useEffect(() => {
