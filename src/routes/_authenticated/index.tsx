@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { AuditLog } from "@/components/ops/AuditLog";
+import { RelatorioAdmin } from "@/components/ops/RelatorioAdmin";
 import { MonitorBoard } from "@/components/ops/MonitorBoard";
 import { TacticalMap } from "@/components/ops/TacticalMap";
 import { TratativaForm } from "@/components/ops/TratativaForm";
@@ -432,12 +433,14 @@ function CentroOperacoes() {
                     ))}
                   </ul>
                   <p className="label-mono mt-3 normal-case">
-                    Os registros valem apenas para a sessão aberta no navegador — ao recarregar a
-                    página o histórico é zerado. Gere o relatório PDF antes de encerrar o turno.
+                    Os registros ficam guardados mesmo ao recarregar a página. A trilha do turno
+                    reinicia todos os dias às 10h00; o administrador consulta os últimos 30 dias
+                    no relatório abaixo.
                   </p>
                 </div>
 
                 <AuditLog eventos={ops.eventos} />
+                {auth.isAdmin && <RelatorioAdmin />}
 
 
 
