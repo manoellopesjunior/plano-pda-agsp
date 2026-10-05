@@ -29,3 +29,14 @@ export function ultimosDias(n = DIAS_RETENCAO): string[] {
     return d.toISOString().slice(0, 10);
   });
 }
+
+/** Próximo reset da trilha (próximas 10h00 em São Paulo). */
+export function proximoReset(agora = new Date()): Date {
+  return new Date(inicioTurnoAtual(agora).getTime() + 24 * 60 * 60 * 1000);
+}
+
+/** Tempo restante até o próximo reset, ex.: "21h45m". */
+export function faltaParaReset(agora = new Date()): string {
+  const min = Math.max(0, Math.floor((proximoReset(agora).getTime() - agora.getTime()) / 60000));
+  return `${Math.floor(min / 60)}h${String(min % 60).padStart(2, "0")}m`;
+}
