@@ -50,6 +50,7 @@ function CentroOperacoes() {
   );
 
   const sirene = useSirene(ops.alertas);
+  const falta = ops.relogio.startsWith("--") ? "--h--m" : faltaParaReset();
   const [tela, setTela] = useState<Tela>("Visão Geral");
   const [selecionado, setSelecionado] = useState<PostoId | null>(null);
 
@@ -157,7 +158,7 @@ function CentroOperacoes() {
                 </li>
               );
             })}
-            <li className="ml-auto label-mono normal-case">Trilha reinicia em {faltaParaReset()}</li>
+            <li className="ml-auto label-mono normal-case">Trilha reinicia em {falta}</li>
           </ul>
 
           {/* Barra de estado + ações */}
@@ -256,7 +257,7 @@ function CentroOperacoes() {
                     />
                   </div>
 
-                  <ResumoTurno eventos={ops.eventos} />
+                  <ResumoTurno eventos={ops.eventos} falta={falta} />
 
 
 
@@ -364,8 +365,8 @@ function CentroOperacoes() {
                   right={
                     <Chip tone="signal">
                       {ops.eventos.length
-                        ? `${ops.eventos.length} registro(s) · reinicia em ${faltaParaReset()}`
-                        : `Nenhuma ocorrência hoje · reinicia em ${faltaParaReset()}`}
+                        ? `${ops.eventos.length} registro(s) · reinicia em ${falta}`
+                        : `Nenhuma ocorrência hoje · reinicia em ${falta}`}
                     </Chip>
                   }
                 >

@@ -1,5 +1,5 @@
 import type { Evento } from "@/lib/agsp";
-import { faltaParaReset, inicioTurnoAtual } from "@/lib/turno";
+import { inicioTurnoAtual } from "@/lib/turno";
 import { cn } from "@/lib/utils";
 import { SectionTitle } from "./primitives";
 
@@ -9,7 +9,7 @@ const tom: Record<Evento["nivel"], string> = {
   info: "bg-signal",
 };
 
-export function ResumoTurno({ eventos }: { eventos: Evento[] }) {
+export function ResumoTurno({ eventos, falta }: { eventos: Evento[]; falta: string }) {
   const inicio = inicioTurnoAtual().toLocaleString("pt-BR", {
     timeZone: "America/Sao_Paulo",
     day: "2-digit",
@@ -23,7 +23,7 @@ export function ResumoTurno({ eventos }: { eventos: Evento[] }) {
 
   const dados = [
     { r: "Início do turno", v: inicio },
-    { r: "Trilha reinicia em", v: faltaParaReset() },
+    { r: "Trilha reinicia em", v: falta },
     { r: "Acionamentos", v: String(acionamentos), alerta: acionamentos > 0 },
     { r: "Registros", v: String(eventos.length) },
   ];
