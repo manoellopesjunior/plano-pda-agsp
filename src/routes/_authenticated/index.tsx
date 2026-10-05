@@ -1,9 +1,13 @@
 import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { Volume2, VolumeX } from "lucide-react";
 
 import { AuditLog } from "@/components/ops/AuditLog";
 import { RelatorioAdmin } from "@/components/ops/RelatorioAdmin";
 import { MonitorBoard } from "@/components/ops/MonitorBoard";
+import { QuadroAnunciador } from "@/components/ops/QuadroAnunciador";
+import { ResumoTurno } from "@/components/ops/ResumoTurno";
+import { faltaParaReset } from "@/lib/turno";
 import { TacticalMap } from "@/components/ops/TacticalMap";
 import { TratativaForm } from "@/components/ops/TratativaForm";
 import { InstallButton } from "@/components/ops/InstallButton";
@@ -46,6 +50,7 @@ function CentroOperacoes() {
   );
 
   const sirene = useSirene(ops.alertas);
+  const falta = ops.relogio.startsWith("--") ? "--h--m" : faltaParaReset();
   const [tela, setTela] = useState<Tela>("Visão Geral");
   const [selecionado, setSelecionado] = useState<PostoId | null>(null);
 
@@ -127,46 +132,33 @@ function CentroOperacoes() {
             ))}
           </nav>
 
-          {/* Régua de estado dos postos */}
-          <ul className="mt-3 grid gap-px border border-line bg-line [grid-template-columns:repeat(auto-fit,minmax(120px,1fr))]">
+          {/* Semáforo compacto dos postos */}
+          <ul
+            aria-label="Semáforo dos postos"
+            className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 border border-line bg-panel-2 px-4 py-2"
+          >
             {POSTOS.map((p) => {
               const on = ops.emAlerta(p.id);
               const prev = ops.emPrevencao(p.id);
               return (
-                <li
-                  key={p.id}
-                  className={cn(
-                    "grid grid-cols-[auto_minmax(0,1fr)] items-center gap-2 px-3 py-2",
-                    on ? "bg-alert-bg" : prev ? "bg-warn/12" : "bg-panel-2",
-                  )}
-                >
+                <li key={p.id} className="flex items-center gap-2">
                   <i
                     aria-hidden
-                    className={cn(
-                      "size-2 rounded-full",
-                      on ? "bg-alert" : prev ? "bg-warn" : "bg-ok",
-                    )}
-                    style={
-                      on || prev
-                        ? { animation: "alert-breathe 1.2s ease-in-out infinite" }
-                        : undefined
-                    }
+                    className={cn("size-2.5 rounded-full", on ? "bg-alert" : prev ? "bg-warn" : "bg-ok")}
+                    style={on || prev ? { animation: "alert-breathe 1.2s ease-in-out infinite" } : undefined}
                   />
-                  <div className="min-w-0">
-                    <p className="label-mono truncate">{p.codigo}</p>
-                    <p
-                      className={cn(
-                        "truncate font-display text-base2 font-bold tracking-[0.08em] uppercase",
-                        on ? "text-alert" : prev ? "text-warn" : "text-ok",
-                      )}
-                    >
-                      {on ? "Crítico" : prev ? "Atenção" : "Normal"}
-                    </p>
-                  </div>
+                  <span
+                    className={cn(
+                      "font-mono text-micro font-semibold tracking-[0.12em] uppercase",
+                      on ? "text-alert" : prev ? "text-warn" : "text-muted-foreground",
+                    )}
+                  >
+                    P{p.id} {on ? "· Crítico" : prev ? "· Atenção" : ""}
+                  </span>
                 </li>
               );
             })}
-
+            <li className="ml-auto label-mono normal-case">Trilha reinicia em {falta}</li>
           </ul>
 
           {/* Barra de estado + ações */}
@@ -181,8 +173,10 @@ function CentroOperacoes() {
                 variant={sirene.somAtivo ? "signal" : "alert"}
                 onClick={sirene.alternarSom}
                 aria-pressed={sirene.somAtivo}
+                className="min-w-44 border-2 text-lead"
               >
-                {sirene.somAtivo ? "Megafone: ligado" : "Megafone: mudo"}
+                {sirene.somAtivo ? <Volume2 className="size-5" /> : <VolumeX className="size-5" />}
+                {sirene.somAtivo ? "Megafone ligado" : "Megafone mudo"}
               </OpsButton>
               <InstallButton />
               {auth.isAdmin && (
@@ -263,6 +257,9 @@ function CentroOperacoes() {
                     />
                   </div>
 
+                  <ResumoTurno eventos={ops.eventos} falta={falta} />
+
+
 
                   <div>
                     <SectionTitle>
@@ -333,68 +330,31 @@ function CentroOperacoes() {
             )}
 
             {tela === "Quadros" && (
-              <section
-                className={cn(
-                  "grid gap-4",
-                  auth.podeOperar ? "lg:grid-cols-2" : "mx-auto w-full max-w-3xl",
-                )}
-              >
-                <div className="grid content-start gap-3">
-                  <MonitorBoard
-                    titulo="Quadro de postos"
-                    postos={TODOS}
-                    emAlerta={ops.emAlerta}
-                    emPrevencao={ops.emPrevencao}
-                    destaque
-                  />
-                </div>
-                {auth.podeOperar && (
-                <div>
-                  <SectionTitle>Situação operacional</SectionTitle>
-                  <ul className="grid gap-px border border-line bg-line">
-                    {POSTOS.map((p) => {
-                      const on = ops.emAlerta(p.id);
-                      const podeAgir = on ? auth.podeTratar(p.id) : auth.podeAcionar(p.id);
-                      return (
-                        <li
-                          key={p.id}
-                          className={cn(
-                            "grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-3 py-3",
-                            on ? "bg-alert-bg" : "bg-panel-2",
-                          )}
-                        >
-                          <div className="min-w-0">
-                            <p className="truncate font-display text-base2 font-bold tracking-[0.1em] uppercase text-foreground">
-                              Posto {p.id}
-                            </p>
-                          </div>
-                          {podeAgir ? (
-                            on ? (
-                              <OpsButton
-                                variant="alert"
-                                className="shrink-0"
-                                onClick={() => abrirTratativa(p.id)}
-                              >
-                                Tratar
-                              </OpsButton>
-                            ) : (
-                              <OpsButton
-                                variant="signal"
-                                className="shrink-0"
-                                onClick={() => ops.acionar(p.id)}
-                              >
-                                Acionar
-                              </OpsButton>
-                            )
+              <section className="mx-auto w-full max-w-5xl">
+                <QuadroAnunciador
+                  postos={TODOS}
+                  emAlerta={ops.emAlerta}
+                  emPrevencao={ops.emPrevencao}
+                  acao={
+                    auth.podeOperar
+                      ? (id) => {
+                          const on = ops.emAlerta(id);
+                          const podeAgir = on ? auth.podeTratar(id) : auth.podeAcionar(id);
+                          if (!podeAgir)
+                            return <span className="label-mono">Somente leitura</span>;
+                          return on ? (
+                            <OpsButton variant="alert" className="w-full" onClick={() => abrirTratativa(id)}>
+                              Tratar
+                            </OpsButton>
                           ) : (
-                            <span className="label-mono shrink-0">Somente leitura</span>
-                          )}
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-                )}
+                            <OpsButton variant="signal" className="w-full" onClick={() => ops.acionar(id)}>
+                              Acionar PDA
+                            </OpsButton>
+                          );
+                        }
+                      : undefined
+                  }
+                />
               </section>
             )}
 
@@ -403,7 +363,11 @@ function CentroOperacoes() {
               <section>
                 <SectionTitle
                   right={
-                    <Chip tone="signal">{ops.eventos.length} registro(s)</Chip>
+                    <Chip tone="signal">
+                      {ops.eventos.length
+                        ? `${ops.eventos.length} registro(s) · reinicia em ${falta}`
+                        : `Nenhuma ocorrência hoje · reinicia em ${falta}`}
+                    </Chip>
                   }
                 >
                   Trilha de auditoria
