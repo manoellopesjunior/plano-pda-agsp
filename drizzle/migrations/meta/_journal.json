@@ -8,6 +8,13 @@
       "when": 1791285028294,
       "tag": "0000_pda_rpc_seguranca",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791285264196,
+      "tag": "0001_pda_resetar_where",
+      "breakpoints": true
     }
   ]
 }
