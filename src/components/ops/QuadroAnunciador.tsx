@@ -26,7 +26,7 @@ export function QuadroAnunciador({ postos, emAlerta, emPrevencao, acao }: Props)
             ativos.length ? "text-alert" : "text-ok",
           )}
         >
-          {ativos.length ? `PDA · Posto ${ativos.join(" / ")}` : "Perímetro íntegro"}
+          {ativos.length ? `PDA · ${ativos.length > 1 ? "Postos" : "Posto"} ${ativos.join(" / ")}` : "Perímetro íntegro"}
         </span>
       </header>
       <ul className="grid grid-cols-2 gap-2 p-2 md:grid-cols-3">

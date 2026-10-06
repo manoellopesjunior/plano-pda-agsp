@@ -130,7 +130,20 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      pda_acionar: { Args: { _posto: string }; Returns: string }
+      pda_resetar: {
+        Args: { _detalhe: string; _motivo: string; _responsavel: string }
+        Returns: string
+      }
+      pda_tratar: {
+        Args: {
+          _detalhe: string
+          _motivo: string
+          _posto: string
+          _responsavel: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       app_role: "admin" | "oficial" | "comum"
