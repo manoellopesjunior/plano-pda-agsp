@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { POSTO_BY_ID, POSTOS, type Evento, type Nivel, type PostoId } from "@/lib/agsp";
+import { POSTOS, type Evento, type Nivel, type PostoId } from "@/lib/agsp";
 import { gerarRelatorioPdf } from "@/lib/relatorio";
 import { inicioTurnoAtual } from "@/lib/turno";
 import { supabase } from "@/integrations/supabase/client";

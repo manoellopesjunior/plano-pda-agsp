@@ -88,9 +88,25 @@ function CentroOperacoes() {
               </div>
             </div>
             <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
-              <Chip tone="signal" className="hidden sm:inline-flex">
-                <i className="size-1.5 rounded-full bg-ok" />
-                Enlace ativo
+              <Chip
+                tone={ops.conexao === "offline" ? "alert" : "signal"}
+                className="inline-flex"
+              >
+                <i
+                  className={
+                    "size-1.5 rounded-full " +
+                    (ops.conexao === "sincronizado"
+                      ? "bg-ok"
+                      : ops.conexao === "offline"
+                        ? "bg-alert"
+                        : "bg-warn")
+                  }
+                />
+                {ops.conexao === "sincronizado"
+                  ? "Sincronizado"
+                  : ops.conexao === "offline"
+                    ? "Sem conexão"
+                    : "Sincronizando"}
               </Chip>
               <Chip tone={ops.nAlertas ? "alert" : "ok"} className="hidden sm:inline-flex">
                 {ops.nAlertas ? `${ops.nAlertas} alerta` : "Perímetro íntegro"}
@@ -286,6 +302,7 @@ function CentroOperacoes() {
                             : auth.podeAcionar(postoAtivo.id) && (
                                 <OpsButton
                                   variant="signal"
+                                  disabled={!!ops.ocupado}
                                   onClick={() => ops.acionar(postoAtivo.id)}
                                 >
                                   Acionar PDA
@@ -347,7 +364,7 @@ function CentroOperacoes() {
                               Tratar
                             </OpsButton>
                           ) : (
-                            <OpsButton variant="signal" className="w-full" onClick={() => ops.acionar(id)}>
+                            <OpsButton variant="signal" className="w-full" disabled={!!ops.ocupado} onClick={() => ops.acionar(id)}>
                               Acionar PDA
                             </OpsButton>
                           );
