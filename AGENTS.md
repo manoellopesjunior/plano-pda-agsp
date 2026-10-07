@@ -8,3 +8,7 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+## Decisões técnicas
+- Operações de PDA (acionar, tratar, resetar) passam somente pelas funções do banco `pda_acionar`/`pda_tratar`/`pda_resetar`; o app não grava direto em `pda_alertas`/`pda_eventos`. Motivo: o banco é a autoridade de permissão e grava alerta + auditoria juntos.
+- `pda_eventos` é append-only (sem UPDATE/DELETE para usuários). Motivo: a auditoria precisa ser confiável.
